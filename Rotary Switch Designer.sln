@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rotary Switch Designer", "Rotary Switch Designer\Rotary Switch Designer.csproj", "{725BD3CA-04C7-4985-86C4-6520D21AA315}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{725BD3CA-04C7-4985-86C4-6520D21AA315}.Debug|x86.ActiveCfg = Debug|x86
+		{725BD3CA-04C7-4985-86C4-6520D21AA315}.Debug|x86.Build.0 = Debug|x86
+		{725BD3CA-04C7-4985-86C4-6520D21AA315}.Release|x86.ActiveCfg = Release|x86
+		{725BD3CA-04C7-4985-86C4-6520D21AA315}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
