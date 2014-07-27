@@ -62,11 +62,11 @@
     <Compile Include="Model.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="DeckForm.cs">
+    <Compile Include="SideForm.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DeckForm.Designer.cs">
-      <DependentUpon>DeckForm.cs</DependentUpon>
+    <Compile Include="SideForm.Designer.cs">
+      <DependentUpon>SideForm.cs</DependentUpon>
     </Compile>
     <Compile Include="ShaftForm.cs">
       <SubType>Form</SubType>
@@ -107,8 +107,8 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="DeckForm.resx">
-      <DependentUpon>DeckForm.cs</DependentUpon>
+    <EmbeddedResource Include="SideForm.resx">
+      <DependentUpon>SideForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ShaftForm.resx">
       <DependentUpon>ShaftForm.cs</DependentUpon>

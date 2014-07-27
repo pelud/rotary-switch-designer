@@ -15,7 +15,7 @@ namespace Rotary_Switch_Designer
     public partial class SwitchControl : UserControl
     {
         #region Events
-        public delegate void RequestOperationHandler(object sender, Action<Model.Shaft> action);
+        public delegate void RequestOperationHandler(object sender, Action<Model.Switch> action);
         public event RequestOperationHandler RequestOperation;
         public delegate void SelectedItemChangedHandler(object sender);
         public event SelectedItemChangedHandler SelectedItemChanged;
@@ -23,9 +23,9 @@ namespace Rotary_Switch_Designer
 
         #region Variables
         private bool m_Dirty = false;
-        private Model.Shaft m_Data = new Model.Shaft(); // must not be null
+        private Model.Switch m_Data = null;
         private const string m_ClipboardFormat = "Wafer";
-        private uint m_StatorStart = 0;
+        private const int m_PreviewImageSize = 180;
         #endregion
 
         public SwitchControl()
@@ -36,35 +36,14 @@ namespace Rotary_Switch_Designer
         private void SwitchControl_Load(object sender, EventArgs e)
         {
             this.listView1.LargeImageList = new ImageList();
-            this.listView1.LargeImageList.ImageSize = new Size(128, 2 * 128);
-        }
-
-        /// <summary>
-        /// Indicates the starting location of the stator, in degrees starting from the 12 o'clock position.
-        /// </summary>
-        public uint StatorStart
-        {
-            get { return m_StatorStart; }
-            set
-            {
-                WaferFront.StatorStart = value;
-                WaferBack.StatorStart = value;
-                if (m_StatorStart != value)
-                {
-                    m_StatorStart = value;
-                    data_PropertyChanged(null, null);
-                }
-            }
+            this.listView1.LargeImageList.ImageSize = new Size(m_PreviewImageSize, m_PreviewImageSize);
         }
         
-        public Model.Shaft Data
+        public Model.Switch Data
         {
             get { return m_Data; }
             set
             {
-                if (value == null)
-                    throw new ArgumentNullException("value");
-
                 // clear the old callback
                 if (m_Data != null)
                     m_Data.PropertyChanged -= data_PropertyChanged;
@@ -72,8 +51,9 @@ namespace Rotary_Switch_Designer
                 // update the value
                 m_Data = value;
 
-                // set the new callback
-                m_Data.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
+                    // set the new callback
+                if (m_Data != null)
+                    m_Data.PropertyChanged += new PropertyChangedEventHandler(data_PropertyChanged);
 
                 // update the GUI
                 data_PropertyChanged(m_Data, new PropertyChangedEventArgs("Data"));
@@ -102,49 +82,56 @@ namespace Rotary_Switch_Designer
                 // refresh the list view
                 RefreshListViewItems();
 
-                // update the number of detents
-                WaferFront.Detents = m_Data.Detents;
-                WaferBack.Detents = m_Data.Detents;
+                if (m_Data != null)
+                {
+                    uint pos = 0;
+                    WaferFront.RotorPosition = pos * 360 / m_Data.Shafts[0].Detents;
+                }
             }));
         }
 
         private void RefreshListViewItems()
         {
+            if (m_Data == null)
+            {
+                this.listView1.Items.Clear();
+                return;
+            }
+
             // get the current selected entry
             var selected = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
 
             // check each deck
-            for (int i = 0; i < m_Data.Decks.Count; ++i)
+            for (int i = 0; i < m_Data.Sides.Count; ++i)
             {
-                var deck = m_Data.Decks[i];
+                var data = m_Data.Sides[i];
                 if (i >= this.listView1.Items.Count)
                 {
                     // add an entry to the list view if there isn't enough for each deck
-                    var lvi = new ListViewItem(deck.Name, i);
-                    lvi.Tag = deck;
+                    var lvi = new ListViewItem(data.Name, i);
+                    lvi.Tag = data;
                     this.listView1.Items.Add(lvi);
                     this.listView1.LargeImageList.Images.Add(new Bitmap(1, 1));
                 }
-                else if (this.listView1.Items[i].Text != deck.Name || this.listView1.Items[i].Tag != deck)
+                else if (this.listView1.Items[i].Text != data.Name || this.listView1.Items[i].Tag != data)
                 {
                     // update the existing entry
-                    this.listView1.Items[i].Text = deck.Name;
-                    this.listView1.Items[i].Tag = deck;
+                    this.listView1.Items[i].Text = data.Name;
+                    this.listView1.Items[i].Tag = data;
 
                     // if this is the selected item then update the wafer side views
                     if (selected == this.listView1.Items[i])
                     {
-                        this.WaferFront.Data = deck;
-                        this.WaferBack.Data = deck;
+                        this.WaferFront.Data = data;
                     }
                 }
             }
 
             // remove any excess decks
-            while (this.listView1.Items.Count > m_Data.Decks.Count)
+            while (this.listView1.Items.Count > m_Data.Sides.Count)
             {
-                this.listView1.Items.RemoveAt(m_Data.Decks.Count);
-                this.listView1.LargeImageList.Images.RemoveAt(m_Data.Decks.Count);
+                this.listView1.Items.RemoveAt(m_Data.Sides.Count);
+                this.listView1.LargeImageList.Images.RemoveAt(m_Data.Sides.Count);
             }
 
             // update the icons
@@ -158,12 +145,16 @@ namespace Rotary_Switch_Designer
                 {
                     if (item.Tag != null)
                     {
-                        var data = (Model.Deck)item.Tag;
+                        var data = (Model.Side)item.Tag;
                         var lil = this.listView1.LargeImageList;
                         if (lil != null)
                         {
                             var image = new Bitmap(lil.ImageSize.Width, lil.ImageSize.Height);
                             var g = Graphics.FromImage(image);
+                            var client = new Rectangle(0, 0, image.Width, image.Height);
+                            WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client, 0, bg_brush, fg_pen, fg_brush, this.Font);
+
+#if false
                             //g.SmoothingMode = SmoothingMode.AntiAlias;
                             //g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                             //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
@@ -178,8 +169,8 @@ namespace Rotary_Switch_Designer
                             var client1 = new Rectangle(0, client_height + label_height + pad, image.Width, client_height - label_height - pad);
 
                             // draw the entries
-                            WaferControl.CreateThumbnail(m_Data.Detents, m_StatorStart, data, 0, g, client0, 0, bg_brush, fg_pen, fg_brush, this.Font);
-                            WaferControl.CreateThumbnail(m_Data.Detents, m_StatorStart, data, 1, g, client1, 0, bg_brush, fg_pen, fg_brush, this.Font);
+                            WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client0, 0, bg_brush, fg_pen, fg_brush, this.Font);
+                            WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client1, 0, bg_brush, fg_pen, fg_brush, this.Font);
 
                             // draw the labels
                             g.FillRectangle(bg_brush, (int)((image.Width - label_size0.Width) / 2), 0, label_size0.Width, label_size0.Height);
@@ -187,6 +178,7 @@ namespace Rotary_Switch_Designer
                             g.FillRectangle(bg_brush, (int)((image.Width - label_size1.Width) / 2), client_height + pad, label_size1.Width, label_size1.Height);
                             g.DrawString("Back", this.Font, fg_brush, (int)((image.Width - label_size1.Width) / 2), client_height + pad);
                             g.Flush();
+#endif
 
                             lil.Images[i] = image;
                         }
@@ -210,17 +202,16 @@ namespace Rotary_Switch_Designer
         {
             var deck = SelectedItem;
             this.WaferFront.Data = deck;
-            this.WaferBack.Data = deck;
             if (SelectedItemChanged != null)
                 SelectedItemChanged(this);
         }
 
-        public Model.Deck SelectedItem
+        public Model.Side SelectedItem
         {
             get
             {
                 var lvi = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
-                return lvi != null ? (Model.Deck)lvi.Tag : null;
+                return lvi != null ? (Model.Side)lvi.Tag : null;
             }
         }
 
@@ -241,7 +232,7 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        private void Operation(Action<Model.Shaft> action)
+        private void Operation(Action<Model.Switch> action)
         {
             if (action == null)
                 throw new ArgumentNullException("action");
@@ -250,7 +241,7 @@ namespace Rotary_Switch_Designer
                 RequestOperation(this, action);
         }
 
-        private void wafer1_RequestOperation(object sender, Action<Model.Deck,int> action)
+        private void wafer1_RequestOperation(object sender, Action<Model.Side> action)
         {
             if (sender == null)
                 throw new ArgumentNullException("sender");
@@ -261,23 +252,20 @@ namespace Rotary_Switch_Designer
             var lvi = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
             if (lvi != null)
             {
-                int side = (int)wafer.Side;
-                int deck = listView1.Items.IndexOf(lvi);
-                if (deck == -1)
+                int index = listView1.Items.IndexOf(lvi);
+                if (index == -1)
                     throw new Exception("invalid listview index");
 
-                Operation((Action<Model.Shaft>)((data) =>
+                Operation((Action<Model.Switch>)((data) =>
                 {
                     // argument checks
                     if (data == null)
                         throw new ArgumentNullException("data");
-                    if (deck < 0 || deck >= data.Decks.Count)
-                        throw new Exception("invalid deck index");
-                    if (side < 0 || side >= data.Decks[deck].Sides.Count)
+                    if (index < 0 || index >= data.Sides.Count)
                         throw new Exception("invalid side index");
 
                     // perform the action
-                    action(data.Decks[deck], side);
+                    action(data.Sides[index]);
                 }));
             }
         }
@@ -296,18 +284,16 @@ namespace Rotary_Switch_Designer
             if (index == -1)
                 return;
 
-            Operation((Action<Model.Shaft>)((data) =>
+            Operation((Action<Model.Switch>)((data) =>
             {
                 // santify checks
                 if (data == null)
                     throw new ArgumentNullException("data");
-                if (data.Decks == null)
-                    throw new Exception("data.Decks is null");
-                if (index < 0 || index >= data.Decks.Count)
+                if (index < 0 || index >= data.Sides.Count)
                     throw new ArgumentOutOfRangeException("index");
 
                 // remove the item
-                data.Decks.RemoveAt(index);
+                data.Sides.RemoveAt(index);
             }));
         }
 
@@ -324,44 +310,48 @@ namespace Rotary_Switch_Designer
             return result;
         }
 
-        public void Add(Model.Deck deck)
+        public void Add(Model.Side side)
         {
-            if (deck == null)
-                throw new ArgumentNullException("wafer");
-            if (deck.Sides.Count == 0)
-                throw new ArgumentOutOfRangeException("wafer");
-            if (m_Data.Decks.Count != 0 &&
-                m_Data.Decks[0].Sides.Count != 0 &&
-                m_Data.Decks[0].Sides[0].Positions.Count != deck.Sides[0].Positions.Count)
-                throw new Exception("different number of positions (detents)");
+            if (side == null)
+                throw new ArgumentNullException("side");
+            if (m_Data == null)
+                throw new Exception("data not set");
+
+            // TODO: FIXME: Check to make sure the shaft information is valid
+            if (side.Shaft < 0 || side.Shaft >= m_Data.Shafts.Count)
+                throw new ArgumentOutOfRangeException("side.Shaft");
+
+            // check if the shaft position is duplicated
+            int shaft_position = side.ShaftPosition;
+            while (m_Data.Sides.Any((value) => value.ShaftPosition == shaft_position))
+                shaft_position++;
 
             // check if the name is duplicated (which it probably will be if the user copied & pasted in the same document)
-            string name = deck.Name;
-            if (m_Data.Decks.Any((value) => value.Name == deck.Name))
+            string name = side.Name;
+            if (m_Data.Sides.Any((value) => value.Name == side.Name))
             {
                 // find the next letter that is free
                 int next_name = 0;
-                while (m_Data.Decks.Any((side) => side.Name == ConvertBase26(next_name)))
+                while (m_Data.Sides.Any((s) => s.Name == ConvertBase26(next_name)))
                     next_name++;
 
                 // update the name with the new one
                 name = ConvertBase26(next_name);
             }
 
-            Operation((Action<Model.Shaft>)((data) =>
+            Operation((Action<Model.Switch>)((data) =>
             {
                 // santify checks
                 if (data == null)
                     throw new ArgumentNullException("data");
-                if (data.Decks == null)
-                    throw new Exception("data.Wafers is null");
 
-                // change the name to the randomly assigned one
-                var tmp = (Model.Deck)deck.CloneObject();
+                // change the name and side to the randomly assigned one
+                var tmp = side.CloneObject();
                 tmp.Name = name;
+                tmp.ShaftPosition = shaft_position;
 
                 // add the item
-                data.Decks.Add(tmp);
+                data.Sides.Add(tmp);
             }));
         }
 
@@ -371,11 +361,11 @@ namespace Rotary_Switch_Designer
                 throw new Exception("no item selected to cut/copy");
 
             // get the data
-            var data = (Model.Deck)this.SelectedItem.CloneObject();
+            var data = (Model.Side)this.SelectedItem.CloneObject();
 
             // convert the data to a string
             string result = null;
-            var xs = new XmlSerializer(typeof(Model.Deck));
+            var xs = new XmlSerializer(typeof(Model.Side));
             using (var writer = new StringWriter())
             {
                 xs.Serialize(writer, data);
@@ -413,11 +403,11 @@ namespace Rotary_Switch_Designer
                     string text = (string)Clipboard.GetData(m_ClipboardFormat);
 
                     // convert the data from a string
-                    Model.Deck data = null;
-                    var xs = new XmlSerializer(typeof(Model.Deck));
+                    Model.Side data = null;
+                    var xs = new XmlSerializer(typeof(Model.Side));
                     using (var reader = new StringReader(text))
                     {
-                        data = (Model.Deck)xs.Deserialize(reader);
+                        data = (Model.Side)xs.Deserialize(reader);
                     }
 
                     // add it to the items
@@ -433,68 +423,72 @@ namespace Rotary_Switch_Designer
 
         public void Properties()
         {
+            if (m_Data == null)
+                throw new Exception("data not set");
             if (SelectedItem == null || SelectedItemIndex < 0)
-                return;
-            if (SelectedItem.Sides.Count == 0)
                 return;
 
             try
             {
-                using (var form = new DeckForm()
+                var other_shaft_positions = from side in m_Data.Sides
+                                            where side.Shaft != SelectedItem.Shaft && side.ShaftPosition != SelectedItem.ShaftPosition && side.ShaftPositionRear != SelectedItem.ShaftPositionRear
+                                            select Tuple.Create(side.ShaftPosition, side.ShaftPositionRear);
+
+                using (var form = new SideForm()
                 {
-                    Detents = m_Data.Detents,
-                    OtherIDs = m_Data.Decks.Select((deck) => deck.Name).Where((name) => name != SelectedItem.Name).ToList(),
+                    OtherIDs = m_Data.Sides.Select((side) => side.Name).Where((name) => name != SelectedItem.Name).ToList(),
+                    OtherShaftPositions = other_shaft_positions.ToList(),
                     ID = SelectedItem.Name,
-                    ShaftPositions = (uint)SelectedItem.Sides[0].Positions.Count,
-                    FrontLevels = (uint)(SelectedItem.Sides.Count >= 1 ? SelectedItem.Sides[0].RotorLevels() : 0),
-                    BackLevels = (uint)(SelectedItem.Sides.Count >= 2 ? SelectedItem.Sides[1].RotorLevels() : 0),
+                    ShaftPositions = (uint)SelectedItem.Positions.Count,
+                    Shaft = SelectedItem.Shaft,
+                    ShaftPosition = SelectedItem.ShaftPosition,
+                    ShaftPositionBack = SelectedItem.ShaftPositionRear,
+                    Levels = (uint)(SelectedItem.RotorLevels()),
                 })
                 {
                     if (form.ShowDialog() == DialogResult.OK)
                     {
                         var copy = new
                         {
-                            Deck = SelectedItemIndex,
+                            Index = SelectedItemIndex,
                             Name = form.ID,
-                            FrontLevels = form.FrontLevels,
-                            BackLevels = form.BackLevels,
+                            ShaftPositions = form.ShaftPositions,
+                            Levels = form.Levels,
+                            Shaft = form.Shaft,
+                            ShaftPosition = form.ShaftPosition,
+                            ShaftPositionBack = form.ShaftPositionBack,
                         };
-                        Operation((Action<Model.Shaft>)((data) =>
+                        Operation((Action<Model.Switch>)((data) =>
                         {
                             // argument checks
                             if (data == null)
                                 throw new ArgumentNullException("data");
-                            if (copy.Deck >= data.Decks.Count)
-                                throw new Exception("invalid deck index");
-                            if (data.Decks[copy.Deck] == null)
-                                throw new Exception("deck is null");
+                            if (copy.Index >= data.Sides.Count)
+                                throw new Exception("invalid side index");
+                            if (data.Sides[copy.Index] == null)
+                                throw new Exception("side is null");
 
                             // update the name
-                            var deck = data.Decks[copy.Deck];
-                            deck.Name = copy.Name;
+                            var side = data.Sides[copy.Index];
+                            side.Name = copy.Name;
+                            side.Shaft = copy.Shaft;
+                            side.ShaftPosition = copy.ShaftPosition;
+                            side.ShaftPositionRear = copy.ShaftPositionBack;
 
                             // check the sides
-                            for (int i = 0; i < deck.Sides.Count; ++i)
+                            for (int j = 0; j < side.Positions.Count; ++j)
                             {
-                                var side = deck.Sides[i];
-                                if (side == null)
-                                    throw new Exception("side is null");
+                                var position = side.Positions[j];
+                                if (position == null)
+                                    throw new Exception("position is null");
 
-                                var levels = i == 0 ? copy.FrontLevels : copy.BackLevels;
-                                for (int j = 0; j < side.Positions.Count; ++j)
-                                {
-                                    var position = side.Positions[j];
-                                    if (position == null)
-                                        throw new Exception("position is null");
+                                // add any new rotor levels
+                                while (position.RotorSlices.Count < copy.Levels)
+                                    position.RotorSlices.Add(new Model.RotorSlice());
 
-                                    // add any new rotor levels
-                                    while (position.RotorSlices.Count < levels)
-                                        position.RotorSlices.Add(new Model.RotorSlice());
-
-                                    // remove any excess rotor levels
-                                    while (position.RotorSlices.Count > levels)
-                                        position.RotorSlices.RemoveAt((int)levels);
-                                }
+                                // remove any excess rotor levels
+                                while (position.RotorSlices.Count > copy.Levels)
+                                    position.RotorSlices.RemoveAt(position.RotorSlices.Count - 1);
                             }
                         }));
                     }

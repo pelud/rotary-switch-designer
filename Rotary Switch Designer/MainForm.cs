@@ -10,6 +10,7 @@ using System.Xml.Serialization;
 using System.IO;
 
 // TODO:
+// - add show contact to spoke
 // - draw orientation mark in center of wafer
 // - print and print preview
 // - see about splitting mid section into two for WV-98C style switches
@@ -43,48 +44,46 @@ namespace Rotary_Switch_Designer
         private static Model.Switch TestData()
         {
             // S2A FRONT of RCA/Viz WV-510A
-            var data = new Model.Shaft();
-            data.Decks.Add(new Model.Deck());
-            data.Decks[0].Sides.Add(new Model.Side());
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  0
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  1
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); //  2
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 0 }); //  3
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); //  4
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  5
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  6
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 0 }); //  7
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); //  8
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); //  9
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); // 10
-            data.Decks[0].Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); // 11
-            data.Decks[0].Sides[0].Positions[0].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[0].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[1].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = false, Midsection = true });
-            data.Decks[0].Sides[0].Positions[1].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = false, Midsection = true });
-            data.Decks[0].Sides[0].Positions[2].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[2].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[3].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[3].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[4].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[4].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[5].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[5].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[6].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = false, Midsection = true });
-            data.Decks[0].Sides[0].Positions[6].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = true });
-            data.Decks[0].Sides[0].Positions[7].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[7].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[8].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[8].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[9].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[9].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[10].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[10].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            data.Decks[0].Sides[0].Positions[11].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = true, Midsection = true });
-            data.Decks[0].Sides[0].Positions[11].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
-            var result = new Model.Switch();
-            result.Shafts.Add(data);
-            return result;
+            var data = new Model.Switch();
+            data.Shafts.Add(new Model.Shaft() { Detents = 12 });
+            data.Sides.Add(new Model.Side());
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  0
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  1
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 2 }); //  2
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); //  3
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 2 }); //  4
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  5
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = -1 }); //  6
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 1 }); //  7
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 2 }); //  8
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 2 }); //  9
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 2 }); // 10
+            data.Sides[0].Positions.Add(new Model.Position() { Spoke = 2 }); // 11
+            data.Sides[0].Positions[0].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[0].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[1].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = false, Midsection = true });
+            data.Sides[0].Positions[1].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = false, Midsection = true });
+            data.Sides[0].Positions[2].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[2].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[3].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[3].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[4].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[4].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[5].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[5].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[6].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = true, EdgeCW = false, Midsection = true });
+            data.Sides[0].Positions[6].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = true });
+            data.Sides[0].Positions[7].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[7].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[8].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[8].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[9].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[9].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[10].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[10].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            data.Sides[0].Positions[11].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = true, Midsection = true });
+            data.Sides[0].Positions[11].RotorSlices.Add(new Model.RotorSlice() { EdgeCCW = false, EdgeCW = false, Midsection = false });
+            return data;
         }
         #endregion
 
@@ -136,24 +135,9 @@ namespace Rotary_Switch_Designer
 
         #region Undo Handling
 
-        private void switchControl1_RequestOperation(object sender, Action<Model.Shaft> action)
+        private void switchControl1_RequestOperation(object sender, Action<Model.Switch> action)
         {
-            if (action == null)
-                throw new ArgumentNullException("action");
-
-            Operation((Action<Model.Switch>)((data) =>
-            {
-                // santify checks
-                if (data == null)
-                    throw new ArgumentNullException("data");
-                if (data.Shafts == null)
-                    throw new Exception("data.Wafers is null");
-                if (data.Shafts.Count == 0)
-                    throw new Exception("no shaft");
-
-                // perform the action
-                action(data.Shafts[0]);
-            }));
+            Operation(action);
         }
 
         private void Operation(Action<Model.Switch> action)
@@ -209,15 +193,9 @@ namespace Rotary_Switch_Designer
         {
             if (m_Data != null && m_Data.Shafts.Count > 0)
             {
-                if (switchControl1.Data != m_Data.Shafts[0])
-                {
-                    // update the switch control
-                    switchControl1.Data = m_Data.Shafts[0];
-                }
-
-                // update the stator start position
-                if (switchControl1.StatorStart != m_Data.StatorStart)
-                    switchControl1.StatorStart = m_Data.StatorStart;
+                // update the switch control
+                if (switchControl1.Data != m_Data)
+                    switchControl1.Data = m_Data;
             }
             else
                 switchControl1.Data = null;
@@ -409,9 +387,6 @@ namespace Rotary_Switch_Designer
             copyToolStripMenuItem.Enabled = item_selected;
             deleteToolStripMenuItem.Enabled = item_selected;
             deckPropertiesToolStripMenuItem.Enabled = item_selected;
-            swapFrontAndBackToolStripMenuItem.Enabled = item_selected;
-            moveDeckLeftToolStripMenuItem.Enabled = m_Data != null && this.switchControl1.SelectedItemIndex > 0;
-            moveDeckRightToolStripMenuItem.Enabled = m_Data != null && m_Data.Shafts.Count > 0 && (this.switchControl1.SelectedItemIndex + 1) < m_Data.Shafts[0].Decks.Count;
             switchPropertiesToolStripMenuItem.Enabled = m_Data != null;
             shaftPropertiesToolStripMenuItem.Enabled = m_Data != null && m_Data.Shafts.Count > 0;
             string file_title = m_Filename != null ? Path.GetFileNameWithoutExtension(m_Filename) : "New Document";
@@ -534,16 +509,24 @@ namespace Rotary_Switch_Designer
             {
                 // find the next letter that is free
                 int next_name = 0;
-                while (m_Data.Shafts[0].Decks.Any((side) => side.Name == ConvertBase26(next_name)))
+                while (m_Data.Sides.Any((side) => side.Name == ConvertBase26(next_name)))
                     next_name++;
 
+                // find the next shaft position that is free
+                int shaft = 0;
+                int next_shaft_position = 0;
+                while (m_Data.Sides.Any((side) => side.Shaft == shaft && side.ShaftPosition == next_shaft_position))
+                    next_shaft_position++;
+
                 // display the side form
-                bool has_decks = m_Data.Shafts[0].Decks.Count > 0 && m_Data.Shafts[0].Decks[0].Sides.Count > 0;
-                using (var form = new DeckForm()
+                using (var form = new SideForm()
                 {
-                    Detents = m_Data.Shafts[0].Detents,
                     ShaftPositions = m_Data.Shafts[0].Detents,
-                    OtherIDs = m_Data.Shafts[0].Decks.Select((deck) => deck.Name).ToList(),
+                    OtherIDs = m_Data.Sides.Select((deck) => deck.Name).ToList(),
+                    OtherShaftPositions = m_Data.Sides.Select((side) => Tuple.Create(side.ShaftPosition, side.ShaftPositionRear)).ToList(),
+                    Shaft = shaft,
+                    ShaftPosition = next_shaft_position,
+                    ShaftPositionBack = false,
                     ID = ConvertBase26(next_name),
                 })
                 {
@@ -552,23 +535,24 @@ namespace Rotary_Switch_Designer
                         // make sure a deck name is valid and doesn't already exist
                         if (string.IsNullOrWhiteSpace(form.Name))
                             throw new Exception("please enter a valid name");
-                        if (m_Data.Shafts[0].Decks.Any((value) => value.Name == form.Name))
+                        if (m_Data.Sides.Any((value) => value.Name == form.Name))
                             throw new Exception("deck with given name already exists");
 
                         // create the new entry
                         var positions = form.ShaftPositions;
-                        var data = new Model.Deck() { Name = form.ID };
-                        for (int i = 0; i < 2; ++i)
+                        var data = new Model.Side()
                         {
-                            data.Sides.Add(new Model.Side());
-                            var side = data.Sides[i];
-                            for (int j = 0; j < positions; ++j)
-                            {
-                                var levels = i == 0 ? form.FrontLevels : form.BackLevels;
-                                side.Positions.Add(new Model.Position());
-                                for (int k = 0; k < levels; ++k)
-                                    side.Positions[j].RotorSlices.Add(new Model.RotorSlice());
-                            }
+                            Name = form.ID,
+                            Shaft = form.Shaft,
+                            ShaftPosition = form.ShaftPosition,
+                            ShaftPositionRear = form.ShaftPositionBack,
+                        };
+                        for (int j = 0; j < positions; ++j)
+                        {
+                            var levels = form.Levels;
+                            data.Positions.Add(new Model.Position());
+                            for (int k = 0; k < levels; ++k)
+                                data.Positions[j].RotorSlices.Add(new Model.RotorSlice());
                         }
 
                         // add it using the paste method
@@ -701,82 +685,6 @@ namespace Rotary_Switch_Designer
                 }
             }
         }
-
-        private void MoveDeck(int amount)
-        {
-            if (m_Data == null || m_Data.Shafts.Count == 0)
-                return;
-            int index = switchControl1.SelectedItemIndex;
-            if (index < 0)
-                return;
-            int new_index = index + amount;
-            if (new_index < 0 || new_index >= m_Data.Shafts[0].Decks.Count)
-                return; // invalid amount
-
-            Operation((Action<Model.Switch>)((data) =>
-            {
-                // santify checks
-                if (data == null)
-                    throw new ArgumentNullException("data");
-                if (data.Shafts.Count == 0)
-                    throw new ArgumentOutOfRangeException("data.Shafts.Count");
-                if (index >= data.Shafts[0].Decks.Count)
-                    throw new ArgumentOutOfRangeException("index");
-                if (new_index >= data.Shafts[0].Decks.Count)
-                    throw new ArgumentOutOfRangeException("new_index");
-
-                // move the item to the new location
-                var tmp = data.Shafts[0].Decks[index];
-                data.Shafts[0].Decks.RemoveAt(index);
-                data.Shafts[0].Decks.Insert(new_index, tmp);
-            }));
-
-            switchControl1.SelectedItemIndex += amount;
-            UpdateMenuItems();
-        }
-
-        private void moveDeckLeftToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MoveDeck(-1);
-        }
-
-        private void moveDeckRightToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MoveDeck(1);
-        }
-
-        private void swapFrontAndBackToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            if (m_Data == null || m_Data.Shafts.Count == 0)
-                return;
-            int index = switchControl1.SelectedItemIndex;
-            if (index < 0 || index >= m_Data.Shafts[0].Decks.Count)
-                return;
-            if (m_Data.Shafts[0].Decks[index].Sides.Count != 2)
-                return;
-
-            Operation((Action<Model.Switch>)((data) =>
-            {
-                // santify checks
-                if (data == null)
-                    throw new ArgumentNullException("data");
-                if (data.Shafts.Count == 0)
-                    throw new ArgumentOutOfRangeException("data.Shafts.Count");
-                if (index >= data.Shafts[0].Decks.Count)
-                    throw new ArgumentOutOfRangeException("index");
-
-                // swap the front and back sides
-                var deck = data.Shafts[0].Decks[index];
-                var tmp = deck.Sides[0];
-                deck.Sides.RemoveAt(0);
-                deck.Sides.Insert(1, tmp);
-            }));
-        }
         #endregion
-
-        private void switchControl1_RequestOperation(object sender)
-        {
-
-        }
     }
 }

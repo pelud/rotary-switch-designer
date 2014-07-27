@@ -9,16 +9,17 @@ using System.Windows.Forms;
 
 namespace Rotary_Switch_Designer
 {
-    public partial class DeckForm : Form
+    public partial class SideForm : Form
     {
-        public DeckForm()
+        public SideForm()
         {
             InitializeComponent();
+            Shaft = 0;
         }
 
-        public uint Detents { get; set; }
-
         public IList<string> OtherIDs { get; set; }
+
+        public IList<Tuple<int, bool>> OtherShaftPositions { get; set; }
 
         public string ID
         {
@@ -35,30 +36,38 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        public uint FrontLevels
+        public uint Levels
         {
-            get { return (uint)FrontLevelsUpDown.Value; }
-            set { FrontLevelsUpDown.Value = value; }
+            get { return (uint)LevelsUpDown.Value; }
+            set { LevelsUpDown.Value = value; }
         }
 
-        public uint BackLevels
+        public int Shaft { get; set; }
+
+        public int ShaftPosition
         {
-            get { return (uint)BackLevelsUpDown.Value; }
-            set { BackLevelsUpDown.Value = value; }
+            get { return (int)ShaftPositionUpDown.Value - 1; }
+            set { ShaftPositionUpDown.Value = value + 1; }
+        }
+
+        public bool ShaftPositionBack
+        {
+            get { return BackRadioButton.Checked; }
+            set { BackRadioButton.Checked = value; }
         }
 
         private void buttonOK_Click(object sender, EventArgs e)
         {
-            if (Detents != 0 && (ShaftPositions % Detents) != 0)
+            if (string.IsNullOrWhiteSpace(ID))
             {
-                MessageBox.Show("The switch positions must be a multiple of the shaft positions");
+                MessageBox.Show("Please enter a valid deck name.", "Error");
                 this.DialogResult = System.Windows.Forms.DialogResult.None;
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(ID))
+            if (OtherShaftPositions != null && OtherShaftPositions.Contains(Tuple.Create(ShaftPosition, ShaftPositionBack)))
             {
-                MessageBox.Show("Please enter a valid deck name.", "Error");
+                MessageBox.Show("The given shaft position has already been used.  Please choose another.", "Error");
                 this.DialogResult = System.Windows.Forms.DialogResult.None;
                 return;
             }

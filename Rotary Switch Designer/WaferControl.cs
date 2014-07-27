@@ -14,7 +14,7 @@ namespace Rotary_Switch_Designer
     public partial class WaferControl : UserControl
     {
         #region Events
-        public delegate void RequestOperationHandler(object sender, Action<Model.Deck,int> action);
+        public delegate void RequestOperationHandler(object sender, Action<Model.Side> action);
         public event RequestOperationHandler RequestOperation;
         #endregion
 
@@ -30,8 +30,7 @@ namespace Rotary_Switch_Designer
         #endregion
 
         #region Variables
-        private Model.Deck m_Data = null;
-        private int m_Side = 0;
+        private Model.Side m_Data = null;
         private uint m_RotorPosition = 0;
         private Point? m_MousePosition = null;
         private const double SpokeHoleSize = .02;
@@ -52,15 +51,12 @@ namespace Rotary_Switch_Designer
         private int m_SpokeHoleHitPosition = -1;
         private uint[,] m_FloodFillColourMap = null;
         private uint m_StatorStart = 0;
-        private uint m_Detents = 1;
         #endregion
 
         #region Constructor
         public WaferControl()
         {
             InitializeComponent();
-            sharedToolStripMenuItem.Tag = -2;
-            deleteToolStripMenuItem.Tag = -1;
             m_BgBrush = new SolidBrush(this.BackColor);
             m_FgPen = new Pen(this.ForeColor);
             m_FgBrush = new SolidBrush(this.ForeColor);
@@ -108,23 +104,10 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        public uint Detents
-        {
-            get { return m_Detents; }
-            set
-            {
-                if (value != m_Detents)
-                {
-                    m_Detents = value;
-                    PostRefresh();
-                }
-            }
-        }
-
         /// <summary>
         /// Gets or sets the wafer data associated with the control.
         /// </summary>
-        public Model.Deck Data
+        public Model.Side Data
         {
             get { return m_Data; }
             set
@@ -149,23 +132,6 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        public int Side
-        {
-            get { return m_Side; }
-            set
-            {
-                if (value != m_Side)
-                {
-                    // update the side
-                    m_Side = value;
-
-                    // update the property related information
-                    // this will call redraw
-                    m_Data_PropertyChanged(m_Data, null);
-                }
-            }
-        }
-
         /// <summary>
         /// Indicates the current rotor position.
         /// </summary>
@@ -182,38 +148,17 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        public static void CreateThumbnail(uint detents, uint stator_start, Model.Deck data, int side, Graphics g, Rectangle client, uint rotor_position, Brush bg_brush, Pen fg_pen, Brush fg_brush, Font font)
+        public static void CreateThumbnail(uint stator_start, Model.Side data, Graphics g, Rectangle client, uint rotor_position, Brush bg_brush, Pen fg_pen, Brush fg_brush, Font font)
         {
             HitType hit;
             int hit_position;
             int hit_slice;
-            Render(detents, data, side, rotor_position, stator_start, g, bg_brush, fg_pen, fg_brush, false, font, client, null, null, out hit, out hit_position, out hit_slice);
+            Render(data, rotor_position, stator_start, g, bg_brush, fg_pen, fg_brush, false, font, client, null, null, out hit, out hit_position, out hit_slice);
         }
 
         #endregion
 
         #region Event Handlers
-
-        static string SpokeItemName(int i, int RotorLevels)
-        {
-            if (RotorLevels == 1)
-                return "Add";
-            else if (RotorLevels == 2)
-            {
-                switch (i)
-                {
-                    case 0:
-                        return "Inner";
-                    case 1:
-                        return "Outer";
-                }
-            }
-            if (i == 0)
-                return string.Format("Position {0} (Inner)", i);
-            if (i == RotorLevels - 1)
-                return string.Format("Position {0} (Outer)", i);
-            return string.Format("Position {0}", i + 1);
-        }
 
         static bool GetRotorValue(Model.Side side, int i, int j)
         {
@@ -305,17 +250,19 @@ namespace Rotary_Switch_Designer
 
         void m_Data_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (m_Data != null && m_Side >= 0 && m_Side < m_Data.Sides.Count)
+            if (m_Data != null)
             {
                 // update the flood fill colour map
-                m_FloodFillColourMap = GenerateColourMap(m_Data.Sides[m_Side]);
+                m_FloodFillColourMap = GenerateColourMap(m_Data);
             }
+            else
+                m_FloodFillColourMap = null;
 
             // refresh the screen
             PostRefresh();
         }
 
-        private void Operation(Action<Model.Deck,int> action)
+        private void Operation(Action<Model.Side> action)
         {
             if (RequestOperation != null)
                 RequestOperation(this, action);
@@ -356,7 +303,7 @@ namespace Rotary_Switch_Designer
         /// <remarks>
         /// This method needs to be cleaned up.
         /// </remarks>
-        private static void Render(uint detents, Model.Deck data, int side, uint rotor_position, uint stator_start, Graphics g, Brush bg_brush, Pen fg_pen, Brush fg_brush, bool editor_mode, Font font, Rectangle client, Point? mouse, uint[,] fill_map, out HitType hit, out int hit_position, out int hit_slice)
+        private static void Render(Model.Side data, uint rotor_position_angle, uint stator_start, Graphics g, Brush bg_brush, Pen fg_pen, Brush fg_brush, bool editor_mode, Font font, Rectangle client, Point? mouse, uint[,] fill_map, out HitType hit, out int hit_position, out int hit_slice)
         {
             hit = HitType.None;
             hit_position = -1;
@@ -366,39 +313,30 @@ namespace Rotary_Switch_Designer
             if (g != null)
                 g.FillRectangle(bg_brush, client);
 
-            if (data == null || side < 0 || side > data.Sides.Count || data.Sides[side] == null || data.Sides[side].Positions == null)
+            if (data == null)
                 return;
 
             // test if we should draw the text
-            var side_data = data.Sides[side];
             bool labels = false;
             var size = Math.Min(client.Width, client.Height);
             if (g != null && font != null)
             {
-                var label_size = g.MeasureString(side_data.Positions.Count.ToString(), font);
+                var label_size = g.MeasureString(data.Positions.Count.ToString(), font);
                 if (Math.Max(label_size.Width, label_size.Height) < size * MinTextSize)
                     labels = true;
             }
 
             // convert the shared positions into a bitmap
-            var WaferPositions = side_data.Positions;//.ToList();
-            var shared_positions = new bool[WaferPositions.Count];
-            foreach (var pos in data.SharedPositions)
-            {
-                if (pos <= shared_positions.GetUpperBound(0))
-                    shared_positions[pos] = true;
-            }
-
-            var rotor_levels = side_data.RotorLevels();
+            var WaferPositions = data.Positions;//.ToList();
+            var rotor_levels = data.RotorLevels();
             var center = new Point(client.Left + client.Width / 2, client.Top + client.Height / 2);
             var r = size / 2;
             var AngleOffset = 0.5;
             var RotorLevelSize = (RotorMaxDistance - RotorMinDistance) / rotor_levels;
             var SpokeHoleRadius = (int)(Math.Min(client.Width, client.Height) * SpokeHoleSize);
             uint hit_colour = 0;
-            for (int i = 0; i < WaferPositions.Count; ++i)
+            for (int ri = 0; ri < WaferPositions.Count; ++ri)
             {
-                var ri = (int)(((uint)i + (uint)WaferPositions.Count - (rotor_position % (uint)WaferPositions.Count)) % (uint)WaferPositions.Count);
                 var rotor = WaferPositions[ri];
                 var ri_ccw = (int)(((uint)ri + (uint)WaferPositions.Count - 1) % (uint)WaferPositions.Count);
                 var rotor_ccw = WaferPositions[ri_ccw];
@@ -443,10 +381,10 @@ namespace Rotary_Switch_Designer
                         //
                         var RotorStartRadius = (int)(r * (RotorMinDistance + RotorLevelSize * j));
                         var RotorEndRadius = (int)(r * (RotorMinDistance + RotorLevelSize * (j + 1)));
-                        var RotorStartAngleDeg = ((float)i + (float)AngleOffset - 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorPreGapAngleDeg = ((float)i + (float)AngleOffset - GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorPostGapAngleDeg = ((float)i + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorEndAngleDeg = ((float)i + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorStartAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset - 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorPreGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset - GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorPostGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorEndAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
 
                         using (var p = new GraphicsPath())
                         {
@@ -463,10 +401,10 @@ namespace Rotary_Switch_Designer
                             if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
                             {
                                 hit = HitType.EdgeCCW;
-                                hit_position = i;
+                                hit_position = ri;
                                 hit_slice = j;
                                 if (fill_map != null)
-                                    hit_colour = fill_map[i * 3, j];
+                                    hit_colour = fill_map[ri * 3, j];
                             }
                         }
 
@@ -485,10 +423,10 @@ namespace Rotary_Switch_Designer
                             if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
                             {
                                 hit = HitType.Midsection;
-                                hit_position = i;
+                                hit_position = ri;
                                 hit_slice = j;
                                 if (fill_map != null)
-                                    hit_colour = fill_map[i * 3 + 1, j];
+                                    hit_colour = fill_map[ri * 3 + 1, j];
                             }
                         }
 
@@ -507,19 +445,18 @@ namespace Rotary_Switch_Designer
                             if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
                             {
                                 hit = HitType.EdgeCW;
-                                hit_position = i;
+                                hit_position = ri;
                                 hit_slice = j;
                                 if (fill_map != null)
-                                    hit_colour = fill_map[i * 3 + 2, j];
+                                    hit_colour = fill_map[ri * 3 + 2, j];
                             }
                         }
                     }
                 }
             }
 
-            for (int i = 0; i < WaferPositions.Count; ++i)
+            for (int ri = 0; ri < WaferPositions.Count; ++ri)
             {
-                var ri = (int)(((uint)i + (uint)WaferPositions.Count - (rotor_position % (uint)WaferPositions.Count)) % (uint)WaferPositions.Count);
                 var rotor = WaferPositions[ri];
                 var ri_ccw = (int)(((uint)ri + (uint)WaferPositions.Count - 1) % (uint)WaferPositions.Count);
                 var rotor_ccw = WaferPositions[ri_ccw];
@@ -533,10 +470,10 @@ namespace Rotary_Switch_Designer
                         var slice = slices[j];
                         var RotorStartRadius = (int)(r * (RotorMinDistance + RotorLevelSize * j));
                         var RotorEndRadius = (int)(r * (RotorMinDistance + RotorLevelSize * (j + 1)));
-                        var RotorStartAngleDeg = ((float)i + (float)AngleOffset - 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorPreGapAngleDeg = ((float)i + (float)AngleOffset - GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorPostGapAngleDeg = ((float)i + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorEndAngleDeg = ((float)i + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorStartAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset - 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorPreGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset - GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorPostGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorEndAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
 
                         using (var p = new GraphicsPath())
                         {
@@ -549,7 +486,7 @@ namespace Rotary_Switch_Designer
                                 p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
                             });
 
-                            if (g != null && ((hit == HitType.EdgeCCW && hit_position == i && hit_slice == j) || (fill_map != null && fill_map[i * 3, j] == hit_colour)))
+                            if (g != null && ((hit == HitType.EdgeCCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3, j] == hit_colour)))
                                 g.FillPath(SystemBrushes.Highlight, p);
                         }
 
@@ -564,7 +501,7 @@ namespace Rotary_Switch_Designer
                                 p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
                             });
 
-                            if (g != null && ((hit == HitType.Midsection && hit_position == i && hit_slice == j) || (fill_map != null && fill_map[i * 3 + 1, j] == hit_colour)))
+                            if (g != null && ((hit == HitType.Midsection && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 1, j] == hit_colour)))
                                 g.FillPath(SystemBrushes.Highlight, p);
                         }
 
@@ -579,27 +516,27 @@ namespace Rotary_Switch_Designer
                                 p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
                             });
 
-                            if (g != null && ((hit == HitType.EdgeCW && hit_position == i && hit_slice == j) || (fill_map != null && fill_map[i * 3 + 2, j] == hit_colour)))
+                            if (g != null && ((hit == HitType.EdgeCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 2, j] == hit_colour)))
                                 g.FillPath(SystemBrushes.Highlight, p);
                         }
                     }
                 }
 
                 // get the position associated with the stator
-                var stator = WaferPositions[i];
+                var stator = WaferPositions[ri];
                 if (stator != null)
                 {
                     // outside angle
-                    var StatorAngleRad = (stator_start / 360.0 + ((double)i + AngleOffset) / WaferPositions.Count) * 2.0 * Math.PI - Math.PI / 2;
+                    var StatorAngleRad = (stator_start / 360.0 + ((double)ri + AngleOffset) / WaferPositions.Count) * 2.0 * Math.PI - Math.PI / 2;
 
                     // draw the text
                     if (g != null && labels && (editor_mode || stator.Spoke != -1))
                     {
                         var TextPosition = p2c(StatorAngleRad, r * TextDistance + TextPad, center);
-                        var Text = (i + 1).ToString();
+                        var Text = (ri + 1).ToString();
                         var TextSize = g.MeasureString(Text, font, client.Width);
                         TextPosition.Offset(-(int)((TextSize.Width) / 2), -(int)((TextSize.Height) / 2));
-                        g.DrawString((i + 1).ToString(), font, fg_brush, TextPosition);
+                        g.DrawString((ri + 1).ToString(), font, fg_brush, TextPosition);
                     }
 
                     using (var p = new GraphicsPath())
@@ -609,7 +546,7 @@ namespace Rotary_Switch_Designer
                         var SpokeHole = new Rectangle(SpokePosition.X - SpokeHoleRadius, SpokePosition.Y - SpokeHoleRadius, SpokeHoleRadius * 2, SpokeHoleRadius * 2);
                         p.AddEllipse(SpokeHole);
 
-                        // draw the spoke
+                        // draw the spoke hole
                         if (g != null && stator.Spoke != -1)
                             g.DrawPath(fg_pen, p);
                         else if (g != null && editor_mode)
@@ -619,34 +556,34 @@ namespace Rotary_Switch_Designer
                         if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
                         {
                             hit = HitType.SpokeHole;
-                            hit_position = i;
+                            hit_position = ri;
                         }
 
                         if (g != null)
                         {
                             // draw the selector for the spoke hole
-                            if (hit == HitType.SpokeHole && hit_position == i)
+                            if (hit == HitType.SpokeHole && hit_position == ri)
                                 g.FillPath(SystemBrushes.Highlight, p);
-                            else if (shared_positions[i])
+                            else if (stator.Shared)
                                 g.FillPath(fg_brush, p);
                         }
                     }
 
                     // draw the spoke
-                    if (stator.Spoke != -1)
+                    if (stator.Spoke > 0)
                     {
                         using (var p = new GraphicsPath())
                         {
                             // add the line for the spoke
-                            var SpokePosition2 = stator.Spoke;
+                            var SpokePosition2 = stator.Spoke - 1;
                             var SpokeLength = Math.Min(SpokePosition2, rotor_levels);
                             var SpokeStart = p2c(StatorAngleRad, r * SpokeHoleDistance - SpokeHoleRadius, center);
                             var SpokeEndRadius = r * (RotorMinDistance + SpokeLength * RotorLevelSize + RotorLevelSize / 2);
                             var SpokeEnd = p2c(StatorAngleRad, SpokeEndRadius, center);
                             p.AddLine(SpokeStart, SpokeEnd);
 
-                            var pen = hit == HitType.SpokeHole && hit_position == i ? SystemPens.HotTrack : fg_pen;
-                            var brush = hit == HitType.SpokeHole && hit_position == i ? SystemBrushes.HotTrack : fg_brush;
+                            var pen = hit == HitType.SpokeHole && hit_position == ri ? SystemPens.HotTrack : fg_pen;
+                            var brush = hit == HitType.SpokeHole && hit_position == ri ? SystemBrushes.HotTrack : fg_brush;
 
                             // draw the spoke line
                             if (g != null)
@@ -676,10 +613,10 @@ namespace Rotary_Switch_Designer
                         var slice = slices[j];
                         var RotorStartRadius = (int)(r * (RotorMinDistance + RotorLevelSize * j));
                         var RotorEndRadius = (int)(r * (RotorMinDistance + RotorLevelSize * (j + 1)));
-                        var RotorStartAngleDeg = ((float)i + (float)AngleOffset - 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorPreGapAngleDeg = ((float)i + (float)AngleOffset - GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorPostGapAngleDeg = ((float)i + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
-                        var RotorEndAngleDeg = ((float)i + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorStartAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset - 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorPreGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset - GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorPostGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
+                        var RotorEndAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
 
                         if (g != null)
                         {
@@ -768,7 +705,7 @@ namespace Rotary_Switch_Designer
             bool fill = (modifiers & Keys.Control) != 0;
 
             // draw the control
-            Render(m_Detents, m_Data, m_Side, this.RotorPosition, m_StatorStart, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
+            Render(m_Data, this.RotorPosition, m_StatorStart, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
 
             // draw a border in design mode
             if (this.DesignMode)
@@ -797,8 +734,6 @@ namespace Rotary_Switch_Designer
         {
             if (m_Data == null)
                 return;
-            if (m_Side < 0 || m_Side >= m_Data.Sides.Count)
-                return; // invalid side
             if (!this.Focused)
                 return;
 
@@ -808,37 +743,40 @@ namespace Rotary_Switch_Designer
 
             // update the hit position
             m_MousePosition = e.Location;
-            Render(m_Detents, m_Data, m_Side, this.RotorPosition, m_StatorStart, null, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, this.m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
+            Render(m_Data, this.RotorPosition, m_StatorStart, null, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, this.m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
 
             // check if the user clicked on the spoke
             if (m_Hit == HitType.SpokeHole && m_HitPosition != -1)
             {
-                var side = m_Data.Sides[m_Side];
-                var rotor_levels = side.RotorLevels();
-
-                // remove any excess context menu entries
-                while (SpokeMenuStrip.Items.Count > (rotor_levels + 2))
-                    SpokeMenuStrip.Items.RemoveAt((int)rotor_levels + 2);
-
-                // update the names of existing context menu entries
-                // first item is always "Shared"
-                // second item is always "Delete"
-                for (int i = 2; i < SpokeMenuStrip.Items.Count; ++i)
-                    SpokeMenuStrip.Items[i].Text = SpokeItemName(i - 2, rotor_levels);
-
-                // add any new context menu entries
-                while (SpokeMenuStrip.Items.Count < (rotor_levels + 2))
+                // re-create the menu items
+                SpokeMenuStrip.Items.Clear();
+                var position = m_Data.Positions[m_HitPosition];
+                SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Delete") { Tag = -1 });
+                SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Contact Only") { Tag = 0 });
+                var rotor_levels = m_Data.RotorLevels();
+                switch (rotor_levels)
                 {
-                    SpokeMenuStrip.Items.Add(SpokeItemName(SpokeMenuStrip.Items.Count - 2, rotor_levels));
-                    SpokeMenuStrip.Items[SpokeMenuStrip.Items.Count - 1].Tag = SpokeMenuStrip.Items.Count - 3;
+                    case 0:
+                        break; // do nothing
+                    case 1:
+                        SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Add") { Tag = 1 });
+                        break;
+                    case 2:
+                        SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Inner") { Tag = 1 });
+                        SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Outer") { Tag = 2 });
+                        break;
+                    default:
+                        SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Position 1 (Inner)") { Tag = 1 });
+                        for (int i = 1; i < (rotor_levels - 1); ++i)
+                            SpokeMenuStrip.Items.Add(new ToolStripMenuItem(string.Format("Position {0}", i + 1)) { Tag = i + 1 });
+                        SpokeMenuStrip.Items.Add(new ToolStripMenuItem(string.Format("Position {0} (Outer)", rotor_levels)) { Tag = rotor_levels });
+                        break;
                 }
+                SpokeMenuStrip.Items.Add(new ToolStripMenuItem("Shared") { Tag = -2, Checked = position.Shared });
 
-                // enable the entries based on the current spoke position
-                var position = m_Data.Sides[m_Side].Positions[m_HitPosition];
-                sharedToolStripMenuItem.Checked = m_Data.SharedPositions.Contains((uint)m_HitPosition);
-                deleteToolStripMenuItem.Enabled = position.Spoke != -1;
-                for (int i = 2; i < SpokeMenuStrip.Items.Count; ++i)
-                    SpokeMenuStrip.Items[i].Enabled = position.Spoke != (i - 2);
+                // enable/disable the menu items based on the current spoke position
+                foreach (ToolStripItem item in SpokeMenuStrip.Items)
+                    item.Enabled = position.Spoke != (int)item.Tag;
 
                 // show the menu and exit
                 m_SpokeHoleHitPosition = m_HitPosition;
@@ -855,14 +793,9 @@ namespace Rotary_Switch_Designer
                     HitType hit = m_Hit; // copy for lambda closure
                     int hit_position = m_HitPosition; // copy for lambda closure
                     int hit_slice = m_HitSlice; // copy for lambda closure
-                    Operation((Action<Model.Deck,int>)((deck,side) =>
+                    Operation((Action<Model.Side>)((data) =>
                     {
                         // sanity checks
-                        if (deck == null)
-                            throw new ArgumentNullException("deck");
-                        if (side < 0 || side >= deck.Sides.Count)
-                            throw new IndexOutOfRangeException("side");
-                        var data = deck.Sides[side];
                         if (data == null)
                             throw new ArgumentNullException("data");
                         if (data.Positions == null)
@@ -914,14 +847,9 @@ namespace Rotary_Switch_Designer
                     }
 
                     // flood full, queue the operation
-                    Operation((Action<Model.Deck, int>)((deck, side) =>
+                    Operation((Action<Model.Side>)((data) =>
                     {
                         // sanity checks
-                        if (deck == null)
-                            throw new ArgumentNullException("deck");
-                        if (side < 0 || side >= deck.Sides.Count)
-                            throw new IndexOutOfRangeException("side");
-                        var data = deck.Sides[side];
                         if (data == null)
                             throw new ArgumentNullException("data");
                         if (data.Positions == null)
@@ -958,13 +886,8 @@ namespace Rotary_Switch_Designer
             {
                 int index = (int)e.ClickedItem.Tag;
                 int position = m_SpokeHoleHitPosition; // make a copy for the lambda closure
-                Operation((Action<Model.Deck,int>)((deck,side) =>
+                Operation((Action<Model.Side>)((data) =>
                 {
-                    if (deck == null)
-                        throw new ArgumentNullException("deck");
-                    if (side < 0 || side >= deck.Sides.Count)
-                        throw new IndexOutOfRangeException("side");
-                    var data = deck.Sides[side];
                     if (data == null)
                         throw new ArgumentNullException("data");
                     if (data.Positions == null)
@@ -974,15 +897,21 @@ namespace Rotary_Switch_Designer
 
                     if (index == -2)
                     {
-                        // shared
-                        if (deck.SharedPositions.Contains((uint)position))
-                            deck.SharedPositions.Remove((uint)position);
-                        else
-                            deck.SharedPositions.Add((uint)position);
+                        // toggle shared
+                        data.Positions[position].Shared = !data.Positions[position].Shared;
+
+                        // make sure the contact is visible
+                        if (data.Positions[position].Shared && data.Positions[position].Spoke == -1)
+                            data.Positions[position].Spoke = 0; // set to "Contact Only"
                     }
                     else
                     {
+                        // set spoke position
                         data.Positions[position].Spoke = index;
+
+                        // disable the shared flag if it's not visible
+                        if (index == -1)
+                            data.Positions[position].Shared = false;
                     }
                 }));
             }

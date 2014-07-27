@@ -25,17 +25,17 @@ namespace Rotary_Switch_Designer
             return result;
         }
 
-        public static object CloneObject(this object value)
+        public static T CloneObject<T>(this T value)
         {
             if (value == null)
-                return null;
+                return default(T);
 
             using (var ms = new MemoryStream())
             {
                 var xs = new XmlSerializer(value.GetType());
                 xs.Serialize(ms, value);
                 ms.Position = 0;
-                return xs.Deserialize(ms);
+                return (T)xs.Deserialize(ms);
             }
         }
     }
