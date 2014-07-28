@@ -38,8 +38,8 @@
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.SideListView = new System.Windows.Forms.ListView();
-            this.wafer1 = new Rotary_Switch_Designer.WaferControl();
             this.PositionListView = new System.Windows.Forms.ListView();
+            this.wafer1 = new Rotary_Switch_Designer.WaferControl();
             this.listViewMenuStrip.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
@@ -119,6 +119,7 @@
             this.SideListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
             this.SideListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SideListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
+            this.SideListView.HideSelection = false;
             this.SideListView.Location = new System.Drawing.Point(3, 302);
             this.SideListView.MultiSelect = false;
             this.SideListView.Name = "SideListView";
@@ -128,19 +129,6 @@
             this.SideListView.UseCompatibleStateImageBehavior = false;
             this.SideListView.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             this.SideListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
-            // 
-            // wafer1
-            // 
-            this.wafer1.Data = null;
-            this.wafer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wafer1.Location = new System.Drawing.Point(3, 3);
-            this.wafer1.Name = "wafer1";
-            this.wafer1.RotorPosition = ((uint)(0u));
-            this.wafer1.Size = new System.Drawing.Size(306, 293);
-            this.wafer1.StatorStart = ((uint)(0u));
-            this.wafer1.TabIndex = 2;
-            this.wafer1.Tag = "";
-            this.wafer1.RequestOperation += new Rotary_Switch_Designer.WaferControl.RequestOperationHandler(this.wafer1_RequestOperation);
             // 
             // PositionListView
             // 
@@ -155,6 +143,19 @@
             this.PositionListView.Size = new System.Drawing.Size(169, 543);
             this.PositionListView.TabIndex = 3;
             this.PositionListView.UseCompatibleStateImageBehavior = false;
+            // 
+            // wafer1
+            // 
+            this.wafer1.Data = null;
+            this.wafer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wafer1.Location = new System.Drawing.Point(3, 3);
+            this.wafer1.Name = "wafer1";
+            this.wafer1.RotorPosition = ((uint)(0u));
+            this.wafer1.Size = new System.Drawing.Size(306, 293);
+            this.wafer1.StatorStart = ((uint)(0u));
+            this.wafer1.TabIndex = 2;
+            this.wafer1.Tag = "";
+            this.wafer1.RequestOperation += new Rotary_Switch_Designer.WaferControl.RequestOperationHandler(this.wafer1_RequestOperation);
             // 
             // SwitchControl
             // 

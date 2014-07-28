@@ -354,7 +354,7 @@ namespace Rotary_Switch_Designer
 
             #region Variables
             private uint m_Detents = 1;
-            private int m_DetentStopFirst = 1;
+            private int m_DetentStopFirst = 0;
             private int m_DetentStopCount = 0;
             private uint m_FlatAngle;
             #endregion

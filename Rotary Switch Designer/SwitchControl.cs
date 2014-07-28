@@ -354,8 +354,6 @@ namespace Rotary_Switch_Designer
                 throw new ArgumentNullException("side");
             if (m_Data == null)
                 throw new Exception("data not set");
-
-            // TODO: FIXME: Check to make sure the shaft information is valid
             if (side.Shaft < 0 || side.Shaft >= m_Data.Shafts.Count)
                 throw new ArgumentOutOfRangeException("side.Shaft");
 
