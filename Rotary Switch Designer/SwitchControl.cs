@@ -26,6 +26,7 @@ namespace Rotary_Switch_Designer
         private Model.Switch m_Data = null;
         private const string m_ClipboardFormat = "Wafer";
         private const int m_PreviewImageSize = 180;
+        private const int m_PositionImageSize = 100;
         #endregion
 
         public SwitchControl()
@@ -35,8 +36,10 @@ namespace Rotary_Switch_Designer
 
         private void SwitchControl_Load(object sender, EventArgs e)
         {
-            this.listView1.LargeImageList = new ImageList();
-            this.listView1.LargeImageList.ImageSize = new Size(m_PreviewImageSize, m_PreviewImageSize);
+            this.SideListView.LargeImageList = new ImageList();
+            this.SideListView.LargeImageList.ImageSize = new Size(m_PreviewImageSize, m_PreviewImageSize);
+            this.PositionListView.LargeImageList = new ImageList();
+            this.PositionListView.LargeImageList.ImageSize = new Size(m_PositionImageSize, m_PositionImageSize);
         }
         
         public Model.Switch Data
@@ -79,109 +82,78 @@ namespace Rotary_Switch_Designer
                     m_Dirty = false;
                 }
 
-                // refresh the list view
-                RefreshListViewItems();
+                // refresh the list views
+                RefreshSideListViewItems();
+                RefreshPositionListViewItems();
 
                 if (m_Data != null)
                 {
                     uint pos = 0;
-                    WaferFront.RotorPosition = pos * 360 / m_Data.Shafts[0].Detents;
+                    wafer1.RotorPosition = pos * 360 / m_Data.Shafts[0].Detents;
                 }
             }));
         }
 
-        private void RefreshListViewItems()
+        private void RefreshSideListViewItems()
         {
             if (m_Data == null)
             {
-                this.listView1.Items.Clear();
+                this.SideListView.Items.Clear();
                 return;
             }
 
             // get the current selected entry
-            var selected = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
+            var selected = SideListView.SelectedItems != null && SideListView.SelectedItems.Count > 0 ? SideListView.SelectedItems[0] : null;
 
             // check each deck
             for (int i = 0; i < m_Data.Sides.Count; ++i)
             {
                 var data = m_Data.Sides[i];
-                if (i >= this.listView1.Items.Count)
+                if (i >= this.SideListView.Items.Count)
                 {
-                    // add an entry to the list view if there isn't enough for each deck
-                    var lvi = new ListViewItem(data.Name, i);
-                    lvi.Tag = data;
-                    this.listView1.Items.Add(lvi);
-                    this.listView1.LargeImageList.Images.Add(new Bitmap(1, 1));
+                    // add an entry to the list view if there isn't enough for each side
+                    this.SideListView.Items.Add(new ListViewItem(data.Name, i) { Tag = data });
+                    this.SideListView.LargeImageList.Images.Add(new Bitmap(1, 1));
                 }
-                else if (this.listView1.Items[i].Text != data.Name || this.listView1.Items[i].Tag != data)
+                else if (this.SideListView.Items[i].Text != data.Name || this.SideListView.Items[i].Tag != data)
                 {
                     // update the existing entry
-                    this.listView1.Items[i].Text = data.Name;
-                    this.listView1.Items[i].Tag = data;
+                    this.SideListView.Items[i].Text = data.Name;
+                    this.SideListView.Items[i].Tag = data;
 
                     // if this is the selected item then update the wafer side views
-                    if (selected == this.listView1.Items[i])
+                    if (selected == this.SideListView.Items[i])
                     {
-                        this.WaferFront.Data = data;
+                        this.wafer1.Data = data;
                     }
                 }
             }
 
-            // remove any excess decks
-            while (this.listView1.Items.Count > m_Data.Sides.Count)
+            // remove any excess sides
+            while (this.SideListView.Items.Count > m_Data.Sides.Count)
             {
-                this.listView1.Items.RemoveAt(m_Data.Sides.Count);
-                this.listView1.LargeImageList.Images.RemoveAt(m_Data.Sides.Count);
+                this.SideListView.LargeImageList.Images.RemoveAt(this.SideListView.Items.Count - 1);
+                this.SideListView.Items.RemoveAt(this.SideListView.Items.Count - 1);
             }
 
             // update the icons
-            var bg_brush = new SolidBrush(listView1.BackColor);
-            var fg_brush = new SolidBrush(listView1.ForeColor);
+            var bg_brush = new SolidBrush(SideListView.BackColor);
+            var fg_brush = new SolidBrush(SideListView.ForeColor);
             var fg_pen = new Pen(fg_brush);
             try
             {
                 var i = 0;
-                foreach (ListViewItem item in this.listView1.Items)
+                var lil = this.SideListView.LargeImageList;
+                var client = new Rectangle(0, 0, lil.ImageSize.Width, lil.ImageSize.Height);
+                foreach (ListViewItem item in this.SideListView.Items)
                 {
-                    if (item.Tag != null)
+                    var data = (Model.Side)item.Tag;
+                    if (data != null)
                     {
-                        var data = (Model.Side)item.Tag;
-                        var lil = this.listView1.LargeImageList;
-                        if (lil != null)
-                        {
-                            var image = new Bitmap(lil.ImageSize.Width, lil.ImageSize.Height);
-                            var g = Graphics.FromImage(image);
-                            var client = new Rectangle(0, 0, image.Width, image.Height);
-                            WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client, 0, bg_brush, fg_pen, fg_brush, this.Font);
-
-#if false
-                            //g.SmoothingMode = SmoothingMode.AntiAlias;
-                            //g.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                            //g.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                            // calculate the positions
-                            var label_size0 = g.MeasureString("Front", this.Font);
-                            var label_size1 = g.MeasureString("Back", this.Font);
-                            int label_height = (int)label_size0.Height;
-                            int client_height = image.Height / 2;
-                            int pad = 4;
-                            var client0 = new Rectangle(0, label_height, image.Width, client_height - label_height - pad);
-                            var client1 = new Rectangle(0, client_height + label_height + pad, image.Width, client_height - label_height - pad);
-
-                            // draw the entries
-                            WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client0, 0, bg_brush, fg_pen, fg_brush, this.Font);
-                            WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client1, 0, bg_brush, fg_pen, fg_brush, this.Font);
-
-                            // draw the labels
-                            g.FillRectangle(bg_brush, (int)((image.Width - label_size0.Width) / 2), 0, label_size0.Width, label_size0.Height);
-                            g.DrawString("Front", this.Font, fg_brush, (int)((image.Width - label_size0.Width) / 2), 0);
-                            g.FillRectangle(bg_brush, (int)((image.Width - label_size1.Width) / 2), client_height + pad, label_size1.Width, label_size1.Height);
-                            g.DrawString("Back", this.Font, fg_brush, (int)((image.Width - label_size1.Width) / 2), client_height + pad);
-                            g.Flush();
-#endif
-
-                            lil.Images[i] = image;
-                        }
+                        var image = new Bitmap(client.Width, client.Height);
+                        var g = Graphics.FromImage(image);
+                        WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client, 0, bg_brush, fg_pen, fg_brush, this.Font);
+                        lil.Images[i] = image;
                     }
                     i++;
                 }
@@ -194,14 +166,80 @@ namespace Rotary_Switch_Designer
             }
 
             // redraw the list view
-            if (listView1.Items.Count > 0)
-                listView1.RedrawItems(0, listView1.Items.Count - 1, false);
+            if (SideListView.Items.Count > 0)
+                SideListView.RedrawItems(0, SideListView.Items.Count - 1, false);
+        }
+
+        private void RefreshPositionListViewItems()
+        {
+            var selected = SelectedItem;
+            if (m_Data == null || selected == null || m_Data.Shafts.Count == 0)
+            {
+                this.PositionListView.Items.Clear();
+                return;
+            }
+
+            // check each position
+            int detents = (int)m_Data.Shafts[0].Detents;
+            int count = m_Data.Shafts[0].DetentStopCount != 0 ? m_Data.Shafts[0].DetentStopCount : detents;
+            int first_index = m_Data.Shafts[0].DetentStopCount != 0 ? m_Data.Shafts[0].DetentStopFirst : 0;
+            for (int i = 0; i < count; ++i)
+            {
+                string text = ((first_index + i) % detents + 1).ToString();
+                if (i >= this.PositionListView.Items.Count)
+                {
+                    // add an entry to the list view if there isn't enough for each position
+                    this.PositionListView.Items.Add(new ListViewItem(text, i));
+                    this.PositionListView.LargeImageList.Images.Add(new Bitmap(1, 1));
+                }
+                else if (this.PositionListView.Items[i].Text != text)
+                {
+                    // update the existing entry
+                    this.PositionListView.Items[i].Text = text;
+                }
+            }
+
+            // remove any excess positions
+            while (this.PositionListView.Items.Count > count)
+            {
+                this.PositionListView.LargeImageList.Images.RemoveAt(this.PositionListView.Items.Count - 1);
+                this.PositionListView.Items.RemoveAt(this.PositionListView.Items.Count - 1);
+            }
+
+            // update the icons
+            var bg_brush = new SolidBrush(PositionListView.BackColor);
+            var fg_brush = new SolidBrush(PositionListView.ForeColor);
+            var fg_pen = new Pen(fg_brush);
+            try
+            {
+                var lil = this.PositionListView.LargeImageList;
+                var client = new Rectangle(0, 0, lil.ImageSize.Width, lil.ImageSize.Height);
+                for (int i = 0; i < count; ++i)
+                {
+                    uint angle = (uint)((i + first_index) % detents) * 360u / (uint)m_Data.Shafts[0].Detents;
+                    var image = new Bitmap(client.Width, client.Height);
+                    var g = Graphics.FromImage(image);
+                    WaferControl.CreateThumbnail(m_Data.StatorStart, selected, g, client, angle, bg_brush, fg_pen, fg_brush, this.Font);
+                    lil.Images[i] = image;
+                }
+            }
+            finally
+            {
+                bg_brush.Dispose();
+                fg_brush.Dispose();
+                fg_pen.Dispose();
+            }
+
+            // redraw the list view
+            if (PositionListView.Items.Count > 0)
+                PositionListView.RedrawItems(0, PositionListView.Items.Count - 1, false);
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)
         {
             var deck = SelectedItem;
-            this.WaferFront.Data = deck;
+            this.wafer1.Data = deck;
+            RefreshPositionListViewItems();
             if (SelectedItemChanged != null)
                 SelectedItemChanged(this);
         }
@@ -210,7 +248,7 @@ namespace Rotary_Switch_Designer
         {
             get
             {
-                var lvi = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
+                var lvi = SideListView.SelectedItems != null && SideListView.SelectedItems.Count > 0 ? SideListView.SelectedItems[0] : null;
                 return lvi != null ? (Model.Side)lvi.Tag : null;
             }
         }
@@ -219,16 +257,16 @@ namespace Rotary_Switch_Designer
         {
             get
             {
-                var lvi = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
-                return lvi != null ? listView1.Items.IndexOf(lvi) : -1;
+                var lvi = SideListView.SelectedItems != null && SideListView.SelectedItems.Count > 0 ? SideListView.SelectedItems[0] : null;
+                return lvi != null ? SideListView.Items.IndexOf(lvi) : -1;
             }
             set
             {
-                if (value < -1 || value >= listView1.Items.Count)
+                if (value < -1 || value >= SideListView.Items.Count)
                     throw new ArgumentOutOfRangeException("value");
-                listView1.SelectedIndices.Clear();
+                SideListView.SelectedIndices.Clear();
                 if (value != -1)
-                    listView1.SelectedIndices.Add(value);
+                    SideListView.SelectedIndices.Add(value);
             }
         }
 
@@ -249,10 +287,10 @@ namespace Rotary_Switch_Designer
                 throw new ArgumentNullException("action");
             var wafer = (WaferControl)sender;
 
-            var lvi = listView1.SelectedItems != null && listView1.SelectedItems.Count > 0 ? listView1.SelectedItems[0] : null;
+            var lvi = SideListView.SelectedItems != null && SideListView.SelectedItems.Count > 0 ? SideListView.SelectedItems[0] : null;
             if (lvi != null)
             {
-                int index = listView1.Items.IndexOf(lvi);
+                int index = SideListView.Items.IndexOf(lvi);
                 if (index == -1)
                     throw new Exception("invalid listview index");
 
@@ -274,7 +312,7 @@ namespace Rotary_Switch_Designer
         {
             if (SelectedItem != null && e.Button == System.Windows.Forms.MouseButtons.Right)
             {
-                this.listViewMenuStrip.Show(this.listView1, e.Location);
+                this.listViewMenuStrip.Show(this.SideListView, e.Location);
             }
         }
 
@@ -322,8 +360,9 @@ namespace Rotary_Switch_Designer
                 throw new ArgumentOutOfRangeException("side.Shaft");
 
             // check if the shaft position is duplicated
+            bool rear = side.ShaftPositionRear;
             int shaft_position = side.ShaftPosition;
-            while (m_Data.Sides.Any((value) => value.ShaftPosition == shaft_position))
+            while (m_Data.Sides.Any((value) => value.ShaftPositionRear == rear && value.ShaftPosition == shaft_position))
                 shaft_position++;
 
             // check if the name is duplicated (which it probably will be if the user copied & pasted in the same document)
@@ -475,7 +514,15 @@ namespace Rotary_Switch_Designer
                             side.ShaftPosition = copy.ShaftPosition;
                             side.ShaftPositionRear = copy.ShaftPositionBack;
 
-                            // check the sides
+                            // make sure there are enough positions
+                            while (side.Positions.Count < copy.ShaftPositions)
+                                side.Positions.Add(new Model.Position());
+
+                            // remove any excess positions
+                            while (side.Positions.Count > copy.ShaftPositions)
+                                side.Positions.RemoveAt(side.Positions.Count - 1);
+
+                            // check the positions
                             for (int j = 0; j < side.Positions.Count; ++j)
                             {
                                 var position = side.Positions[j];
@@ -520,6 +567,5 @@ namespace Rotary_Switch_Designer
         {
             Properties();
         }
-
     }
 }

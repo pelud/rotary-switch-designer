@@ -386,10 +386,10 @@ namespace Rotary_Switch_Designer
             }
 
             /// <summary>
-            /// Represents the first detent of the stop, starting from 1 as the start position.
+            /// Represents the first detent of the stop, starting from 0 as the start position.
             /// </summary>
             [XmlAttribute]
-            [DefaultValue(1)]
+            [DefaultValue(0)]
             public int DetentStopFirst
             {
                 get { return m_DetentStopFirst; }

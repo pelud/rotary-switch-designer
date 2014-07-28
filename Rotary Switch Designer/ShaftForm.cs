@@ -30,8 +30,8 @@ namespace Rotary_Switch_Designer
 
         public int DetentStopFirst
         {
-            get { return (int)DetentStartFirstUpDown.Value; }
-            set { DetentStartFirstUpDown.Value = value; }
+            get { return (int)DetentStartFirstUpDown.Value - 1; }
+            set { DetentStartFirstUpDown.Value = value + 1; }
         }
 
         public int DetentStopCount

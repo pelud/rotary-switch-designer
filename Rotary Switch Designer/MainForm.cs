@@ -419,7 +419,7 @@ namespace Rotary_Switch_Designer
                     data.Shafts.Add(new Model.Shaft()
                     {
                         Detents = form.Detents,
-                        DetentStopFirst = form.HasStops ? form.DetentStopFirst : 1,
+                        DetentStopFirst = form.HasStops ? form.DetentStopFirst : 0,
                         DetentStopCount = form.HasStops ? form.DetentStopCount : 0,
                     });
                     ResetData(data);
@@ -653,7 +653,7 @@ namespace Rotary_Switch_Designer
 
                         // update the values
                         data.Shafts[0].Detents = copy.Detents;
-                        data.Shafts[0].DetentStopFirst = copy.HasStops ? copy.DetentStopFirst : 1;
+                        data.Shafts[0].DetentStopFirst = copy.HasStops ? copy.DetentStopFirst : 0;
                         data.Shafts[0].DetentStopCount = copy.HasStops ? copy.DetentStopCount : 0;
                     }));
                 }
