@@ -26,7 +26,7 @@ namespace Rotary_Switch_Designer
         private Model.Switch m_Data = null;
         private const string m_ClipboardFormat = "Wafer";
         private const int m_PreviewImageSize = 180;
-        private const int m_PositionImageSize = 100;
+        private const int m_PositionImageSize = 128;
         #endregion
 
         public SwitchControl()
@@ -89,6 +89,7 @@ namespace Rotary_Switch_Designer
                 if (m_Data != null)
                 {
                     uint pos = 0;
+                    wafer1.StatorStart = m_Data.StatorStart;
                     wafer1.RotorPosition = pos * 360 / m_Data.Shafts[0].Detents;
                 }
             }));

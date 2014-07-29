@@ -100,7 +100,7 @@
             // 
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
             this.tableLayoutPanel1.Controls.Add(this.SideListView, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.wafer1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.PositionListView, 1, 0);
@@ -124,7 +124,7 @@
             this.SideListView.MultiSelect = false;
             this.SideListView.Name = "SideListView";
             this.SideListView.ShowGroups = false;
-            this.SideListView.Size = new System.Drawing.Size(306, 244);
+            this.SideListView.Size = new System.Drawing.Size(281, 244);
             this.SideListView.TabIndex = 0;
             this.SideListView.UseCompatibleStateImageBehavior = false;
             this.SideListView.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
@@ -132,15 +132,14 @@
             // 
             // PositionListView
             // 
-            this.PositionListView.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.PositionListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PositionListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.PositionListView.Location = new System.Drawing.Point(315, 3);
+            this.PositionListView.Location = new System.Drawing.Point(290, 3);
             this.PositionListView.MultiSelect = false;
             this.PositionListView.Name = "PositionListView";
             this.tableLayoutPanel1.SetRowSpan(this.PositionListView, 2);
             this.PositionListView.ShowGroups = false;
-            this.PositionListView.Size = new System.Drawing.Size(169, 543);
+            this.PositionListView.Size = new System.Drawing.Size(194, 543);
             this.PositionListView.TabIndex = 3;
             this.PositionListView.UseCompatibleStateImageBehavior = false;
             // 
@@ -151,7 +150,7 @@
             this.wafer1.Location = new System.Drawing.Point(3, 3);
             this.wafer1.Name = "wafer1";
             this.wafer1.RotorPosition = ((uint)(0u));
-            this.wafer1.Size = new System.Drawing.Size(306, 293);
+            this.wafer1.Size = new System.Drawing.Size(281, 293);
             this.wafer1.StatorStart = ((uint)(0u));
             this.wafer1.TabIndex = 2;
             this.wafer1.Tag = "";
