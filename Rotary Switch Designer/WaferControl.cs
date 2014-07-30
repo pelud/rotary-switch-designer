@@ -326,8 +326,8 @@ namespace Rotary_Switch_Designer
                     labels = true;
             }
 
-            // convert the shared positions into a bitmap
-            var WaferPositions = data.Positions;//.ToList();
+            // first pass: perform the hit tracking
+            var WaferPositions = data.Positions;
             var rotor_levels = data.RotorLevels();
             var center = new Point(client.Left + client.Width / 2, client.Top + client.Height / 2);
             var r = size / 2;
@@ -455,6 +455,7 @@ namespace Rotary_Switch_Designer
                 }
             }
 
+            // second pass: do the spoke hole hit tracking and the actual drawing
             for (int ri = 0; ri < WaferPositions.Count; ++ri)
             {
                 var rotor = WaferPositions[ri];
@@ -475,49 +476,52 @@ namespace Rotary_Switch_Designer
                         var RotorPostGapAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + GapRatio / 2) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
                         var RotorEndAngleDeg = rotor_position_angle + ((float)ri + (float)AngleOffset + 0.5f) / WaferPositions.Count * 360.0f - 90.0f + stator_start;
 
-                        using (var p = new GraphicsPath())
+                        // add the polygon for the pre-section highlight
+                        if (g != null && ((hit == HitType.EdgeCCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3, j] == hit_colour)))
                         {
-                            // add a polygon for the pre-section
-                            p.AddPolygon(new Point[]
+                            using (var p = new GraphicsPath())
                             {
-                                p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
-                                p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
-                                p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
-                                p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
-                            });
-
-                            if (g != null && ((hit == HitType.EdgeCCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3, j] == hit_colour)))
+                                p.AddPolygon(new Point[]
+                                {
+                                    p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
+                                    p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
+                                    p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
+                                    p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
+                                });
                                 g.FillPath(SystemBrushes.Highlight, p);
+                            }
                         }
 
-                        using (var p = new GraphicsPath())
+                        // add the polygon for the mid-section highlight
+                        if (g != null && ((hit == HitType.Midsection && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 1, j] == hit_colour)))
                         {
-                            // add a polygon for the mid-section
-                            p.AddPolygon(new Point[]
+                            using (var p = new GraphicsPath())
                             {
-                                p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
-                                p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
-                                p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
-                                p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
-                            });
-
-                            if (g != null && ((hit == HitType.Midsection && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 1, j] == hit_colour)))
+                                p.AddPolygon(new Point[]
+                                {
+                                    p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
+                                    p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
+                                    p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
+                                    p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
+                                });
                                 g.FillPath(SystemBrushes.Highlight, p);
+                            }
                         }
 
-                        using (var p = new GraphicsPath())
+                        // add a polygon for the post-section highlight
+                        if (g != null && ((hit == HitType.EdgeCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 2, j] == hit_colour)))
                         {
-                            // add a polygon for the post-section
-                            p.AddPolygon(new Point[]
+                            using (var p = new GraphicsPath())
                             {
-                                p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
-                                p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
-                                p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
-                                p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
-                            });
-
-                            if (g != null && ((hit == HitType.EdgeCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 2, j] == hit_colour)))
+                                p.AddPolygon(new Point[]
+                                {
+                                    p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
+                                    p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
+                                    p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
+                                    p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
+                                });
                                 g.FillPath(SystemBrushes.Highlight, p);
+                            }
                         }
                     }
                 }
