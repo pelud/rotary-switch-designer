@@ -698,24 +698,28 @@ namespace Rotary_Switch_Designer
 
         private void Wafer_Paint(object sender, PaintEventArgs e)
         {
-            var g = e.Graphics;
-
-            // check if control is pressed
-            var modifiers = Control.ModifierKeys;
-            bool fill = (modifiers & Keys.Control) != 0;
-
-            // draw the control
-            Render(m_Data, this.RotorPosition, m_StatorStart, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
-
-            // draw a border in design mode
-            if (this.DesignMode)
+            try
             {
-                using (var pen = new Pen(this.ForeColor))
+                var g = e.Graphics;
+
+                // check if control is pressed
+                var modifiers = Control.ModifierKeys;
+                bool fill = (modifiers & Keys.Control) != 0;
+
+                // draw the control
+                Render(m_Data, this.RotorPosition, m_StatorStart, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
+
+                // draw a border in design mode
+                if (this.DesignMode)
                 {
-                    pen.DashStyle = DashStyle.Dash;
-                    g.DrawRectangle(pen, this.ClientRectangle.X, this.ClientRectangle.Y, this.ClientRectangle.Width - 1, this.ClientRectangle.Height - 1);
+                    using (var pen = new Pen(this.ForeColor))
+                    {
+                        pen.DashStyle = DashStyle.Dash;
+                        g.DrawRectangle(pen, this.ClientRectangle.X, this.ClientRectangle.Y, this.ClientRectangle.Width - 1, this.ClientRectangle.Height - 1);
+                    }
                 }
             }
+            finally { }
         }
 
         private void Wafer_MouseMove(object sender, MouseEventArgs e)

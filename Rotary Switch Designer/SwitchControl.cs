@@ -27,6 +27,7 @@ namespace Rotary_Switch_Designer
         private const string m_ClipboardFormat = "Wafer";
         private const int m_PreviewImageSize = 180;
         private const int m_PositionImageSize = 128;
+        private const int m_PositionImagePad = 0;
         #endregion
 
         public SwitchControl()
@@ -38,8 +39,7 @@ namespace Rotary_Switch_Designer
         {
             this.SideListView.LargeImageList = new ImageList();
             this.SideListView.LargeImageList.ImageSize = new Size(m_PreviewImageSize, m_PreviewImageSize);
-            this.PositionListView.LargeImageList = new ImageList();
-            this.PositionListView.LargeImageList.ImageSize = new Size(m_PositionImageSize, m_PositionImageSize);
+            data_PropertyChanged(null, null);
         }
         
         public Model.Switch Data
@@ -176,53 +176,50 @@ namespace Rotary_Switch_Designer
             var selected = SelectedItem;
             if (m_Data == null || selected == null || m_Data.Shafts.Count == 0)
             {
-                this.PositionListView.Items.Clear();
+                pictureBox1.Image = new Bitmap(1, 1);
                 return;
             }
 
-            // check each position
-            int detents = (int)m_Data.Shafts[0].Detents;
-            int count = m_Data.Shafts[0].DetentStopCount != 0 ? m_Data.Shafts[0].DetentStopCount : detents;
-            int first_index = m_Data.Shafts[0].DetentStopCount != 0 ? m_Data.Shafts[0].DetentStopFirst : 0;
-            for (int i = 0; i < count; ++i)
-            {
-                string text = ((first_index + i) % detents + 1).ToString();
-                if (i >= this.PositionListView.Items.Count)
-                {
-                    // add an entry to the list view if there isn't enough for each position
-                    this.PositionListView.Items.Add(new ListViewItem(text, i));
-                    this.PositionListView.LargeImageList.Images.Add(new Bitmap(1, 1));
-                }
-                else if (this.PositionListView.Items[i].Text != text)
-                {
-                    // update the existing entry
-                    this.PositionListView.Items[i].Text = text;
-                }
-            }
-
-            // remove any excess positions
-            while (this.PositionListView.Items.Count > count)
-            {
-                this.PositionListView.LargeImageList.Images.RemoveAt(this.PositionListView.Items.Count - 1);
-                this.PositionListView.Items.RemoveAt(this.PositionListView.Items.Count - 1);
-            }
-
             // update the icons
-            var bg_brush = new SolidBrush(PositionListView.BackColor);
-            var fg_brush = new SolidBrush(PositionListView.ForeColor);
+            var bg_brush = new SolidBrush(pictureBox1.BackColor);
+            var fg_brush = new SolidBrush(pictureBox1.ForeColor);
             var fg_pen = new Pen(fg_brush);
             try
             {
-                var lil = this.PositionListView.LargeImageList;
-                var client = new Rectangle(0, 0, lil.ImageSize.Width, lil.ImageSize.Height);
-                for (int i = 0; i < count; ++i)
+                // calculate the detent information
+                uint detents = m_Data.Shafts[0].Detents;
+                uint count = m_Data.Shafts[0].DetentStopCount != 0 ? (uint)m_Data.Shafts[0].DetentStopCount : detents;
+                uint first_index = m_Data.Shafts[0].DetentStopCount != 0 ? (uint)m_Data.Shafts[0].DetentStopFirst : 0u;
+
+                // measure the label size
+                var label_size = Graphics.FromImage(new Bitmap(1, 1)).MeasureString(first_index.ToString(), panel1.Font);
+
+                // create the backing image
+                int element_total_size = m_PositionImageSize + m_PositionImagePad + (int)label_size.Height;
+                //var image = new Bitmap(element_total_size * count, m_PositionImageSize);
+                var image = new Bitmap(m_PositionImageSize, element_total_size * (int)count);
+                var g = Graphics.FromImage(image);
+
+                // draw each angle
+                for (uint i = 0; i < count; ++i)
                 {
-                    uint angle = (uint)((i + first_index) % detents) * 360u / (uint)m_Data.Shafts[0].Detents;
-                    var image = new Bitmap(client.Width, client.Height);
-                    var g = Graphics.FromImage(image);
+                    uint position = (i + first_index) % detents;
+                    uint angle = position * 360u / m_Data.Shafts[0].Detents;
+                    
+                    // create the thumbnail
+                    //var client = new Rectangle(element_total_size * i, 0, m_PositionImageSize, m_PositionImageSize);
+                    var client = new Rectangle(0, element_total_size * (int)i, m_PositionImageSize, m_PositionImageSize);
+                    g.FillRectangle(bg_brush, client);
                     WaferControl.CreateThumbnail(m_Data.StatorStart, selected, g, client, angle, bg_brush, fg_pen, fg_brush, this.Font);
-                    lil.Images[i] = image;
+
+                    // draw the position number
+                    string text = (position + 1).ToString();
+                    var text_size = g.MeasureString(text, panel1.Font);
+                    var p = new Point((int)(image.Width - text_size.Width) / 2, (int)(element_total_size * i + m_PositionImageSize));
+                    g.FillRectangle(bg_brush, p.X, p.Y, text_size.Width, text_size.Height);
+                    g.DrawString((position + 1).ToString(), panel1.Font, fg_brush, p.X, p.Y);
                 }
+                pictureBox1.Image = image;
             }
             finally
             {
@@ -230,10 +227,6 @@ namespace Rotary_Switch_Designer
                 fg_brush.Dispose();
                 fg_pen.Dispose();
             }
-
-            // redraw the list view
-            if (PositionListView.Items.Count > 0)
-                PositionListView.RedrawItems(0, PositionListView.Items.Count - 1, false);
         }
 
         private void listView1_SelectedIndexChanged(object sender, EventArgs e)

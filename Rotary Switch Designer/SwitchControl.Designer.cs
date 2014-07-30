@@ -38,10 +38,13 @@
             this.propertiesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.SideListView = new System.Windows.Forms.ListView();
-            this.PositionListView = new System.Windows.Forms.ListView();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.wafer1 = new Rotary_Switch_Designer.WaferControl();
             this.listViewMenuStrip.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
+            this.panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // listViewMenuStrip
@@ -98,12 +101,13 @@
             // 
             // tableLayoutPanel1
             // 
+            this.tableLayoutPanel1.CellBorderStyle = System.Windows.Forms.TableLayoutPanelCellBorderStyle.Inset;
             this.tableLayoutPanel1.ColumnCount = 2;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 200F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 170F));
             this.tableLayoutPanel1.Controls.Add(this.SideListView, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.wafer1, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.PositionListView, 1, 0);
+            this.tableLayoutPanel1.Controls.Add(this.panel1, 1, 0);
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -117,40 +121,48 @@
             // 
             this.SideListView.Activation = System.Windows.Forms.ItemActivation.OneClick;
             this.SideListView.Alignment = System.Windows.Forms.ListViewAlignment.Left;
+            this.tableLayoutPanel1.SetColumnSpan(this.SideListView, 2);
             this.SideListView.Dock = System.Windows.Forms.DockStyle.Fill;
             this.SideListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
             this.SideListView.HideSelection = false;
-            this.SideListView.Location = new System.Drawing.Point(3, 302);
+            this.SideListView.Location = new System.Drawing.Point(2, 297);
+            this.SideListView.Margin = new System.Windows.Forms.Padding(0);
             this.SideListView.MultiSelect = false;
             this.SideListView.Name = "SideListView";
             this.SideListView.ShowGroups = false;
-            this.SideListView.Size = new System.Drawing.Size(281, 244);
+            this.SideListView.Size = new System.Drawing.Size(483, 250);
             this.SideListView.TabIndex = 0;
             this.SideListView.UseCompatibleStateImageBehavior = false;
             this.SideListView.SelectedIndexChanged += new System.EventHandler(this.listView1_SelectedIndexChanged);
             this.SideListView.MouseClick += new System.Windows.Forms.MouseEventHandler(this.listView1_MouseClick);
             // 
-            // PositionListView
+            // panel1
             // 
-            this.PositionListView.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PositionListView.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.None;
-            this.PositionListView.Location = new System.Drawing.Point(290, 3);
-            this.PositionListView.MultiSelect = false;
-            this.PositionListView.Name = "PositionListView";
-            this.tableLayoutPanel1.SetRowSpan(this.PositionListView, 2);
-            this.PositionListView.ShowGroups = false;
-            this.PositionListView.Size = new System.Drawing.Size(194, 543);
-            this.PositionListView.TabIndex = 3;
-            this.PositionListView.UseCompatibleStateImageBehavior = false;
+            this.panel1.AutoScroll = true;
+            this.panel1.Controls.Add(this.pictureBox1);
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel1.Location = new System.Drawing.Point(318, 5);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(164, 287);
+            this.panel1.TabIndex = 3;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.Location = new System.Drawing.Point(8, 8);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(128, 512);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
+            this.pictureBox1.TabIndex = 4;
+            this.pictureBox1.TabStop = false;
             // 
             // wafer1
             // 
             this.wafer1.Data = null;
             this.wafer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wafer1.Location = new System.Drawing.Point(3, 3);
+            this.wafer1.Location = new System.Drawing.Point(5, 5);
             this.wafer1.Name = "wafer1";
             this.wafer1.RotorPosition = ((uint)(0u));
-            this.wafer1.Size = new System.Drawing.Size(281, 293);
+            this.wafer1.Size = new System.Drawing.Size(305, 287);
             this.wafer1.StatorStart = ((uint)(0u));
             this.wafer1.TabIndex = 2;
             this.wafer1.Tag = "";
@@ -166,6 +178,9 @@
             this.Load += new System.EventHandler(this.SwitchControl_Load);
             this.listViewMenuStrip.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -181,6 +196,7 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.ListView SideListView;
         private WaferControl wafer1;
-        private System.Windows.Forms.ListView PositionListView;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
