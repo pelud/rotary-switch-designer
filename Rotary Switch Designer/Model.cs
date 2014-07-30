@@ -555,5 +555,11 @@ namespace Rotary_Switch_Designer
 
             #endregion
         }
+
+        public interface IExportGraphics
+        {
+            void AddLines(Point[] lines);
+            void DrawString(string text, int x, int y);
+        }
     }
 }
