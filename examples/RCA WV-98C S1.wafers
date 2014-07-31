@@ -59,11 +59,17 @@
         </Position>
         <Position>
           <RotorSlices>
+            <RotorSlice />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
           </RotorSlices>
         </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
@@ -135,13 +141,7 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
-        <Position>
-          <RotorSlices>
-            <RotorSlice />
-            <RotorSlice />
-          </RotorSlices>
-        </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice />
             <RotorSlice />
@@ -217,6 +217,12 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
+        <Position Skip="true">
+          <RotorSlices>
+            <RotorSlice />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
         <Position>
           <RotorSlices>
             <RotorSlice />
@@ -273,12 +279,6 @@
         </Position>
         <Position>
           <RotorSlices>
-            <RotorSlice />
-            <RotorSlice />
-          </RotorSlices>
-        </Position>
-        <Position>
-          <RotorSlices>
             <RotorSlice EdgeCW="true" />
             <RotorSlice />
           </RotorSlices>
@@ -289,7 +289,7 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice />
@@ -355,11 +355,17 @@
         </Position>
         <Position>
           <RotorSlices>
+            <RotorSlice EdgeCW="true" />
+            <RotorSlice EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
           </RotorSlices>
         </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
@@ -419,15 +425,9 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
-        <Position>
-          <RotorSlices>
-            <RotorSlice />
-            <RotorSlice />
-          </RotorSlices>
-        </Position>
         <Position Spoke="2">
           <RotorSlices>
-            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCW="true" />
             <RotorSlice />
           </RotorSlices>
         </Position>
@@ -437,7 +437,7 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice />
@@ -513,6 +513,12 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
+        <Position Skip="true">
+          <RotorSlices>
+            <RotorSlice />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
         <Position>
           <RotorSlices>
             <RotorSlice />
@@ -569,12 +575,6 @@
         </Position>
         <Position>
           <RotorSlices>
-            <RotorSlice />
-            <RotorSlice />
-          </RotorSlices>
-        </Position>
-        <Position>
-          <RotorSlices>
             <RotorSlice EdgeCW="true" />
             <RotorSlice />
           </RotorSlices>
@@ -585,7 +585,7 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice />
@@ -658,6 +658,12 @@
         <Position>
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Skip="true">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
           </RotorSlices>
         </Position>
@@ -717,12 +723,6 @@
         </Position>
         <Position>
           <RotorSlices>
-            <RotorSlice />
-            <RotorSlice />
-          </RotorSlices>
-        </Position>
-        <Position>
-          <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice />
           </RotorSlices>
@@ -733,7 +733,7 @@
             <RotorSlice />
           </RotorSlices>
         </Position>
-        <Position>
+        <Position Skip="true">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
@@ -799,14 +799,20 @@
         </Position>
         <Position>
           <RotorSlices>
-            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
-            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+            <RotorSlice />
           </RotorSlices>
         </Position>
         <Position Spoke="2">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
-            <RotorSlice EdgeCCW="true" Midsection="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position Skip="true">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
           </RotorSlices>
         </Position>
         <Position Spoke="2">
@@ -867,12 +873,6 @@
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice />
-          </RotorSlices>
-        </Position>
-        <Position>
-          <RotorSlices>
-            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
-            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
           </RotorSlices>
         </Position>
         <Position>

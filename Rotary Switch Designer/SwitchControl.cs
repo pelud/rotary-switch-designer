@@ -91,6 +91,8 @@ namespace Rotary_Switch_Designer
                     uint pos = 0;
                     wafer1.StatorStart = m_Data.StatorStart;
                     wafer1.RotorPosition = pos * 360 / m_Data.Shafts[0].Detents;
+                    wafer1.RearView = m_Data.RearView;
+                    wafer1.TextCCW = m_Data.TextCCW;
                 }
             }));
         }
@@ -153,7 +155,7 @@ namespace Rotary_Switch_Designer
                     {
                         var image = new Bitmap(client.Width, client.Height);
                         var g = Graphics.FromImage(image);
-                        WaferControl.CreateThumbnail(m_Data.StatorStart, data, g, client, 0, bg_brush, fg_pen, fg_brush, this.Font);
+                        WaferControl.CreateThumbnail(m_Data.StatorStart, m_Data.RearView, m_Data.TextCCW, data, g, client, 0, bg_brush, fg_pen, fg_brush, this.Font);
                         lil.Images[i] = image;
                     }
                     i++;
@@ -210,7 +212,7 @@ namespace Rotary_Switch_Designer
                     //var client = new Rectangle(element_total_size * i, 0, m_PositionImageSize, m_PositionImageSize);
                     var client = new Rectangle(0, element_total_size * (int)i, m_PositionImageSize, m_PositionImageSize);
                     g.FillRectangle(bg_brush, client);
-                    WaferControl.CreateThumbnail(m_Data.StatorStart, selected, g, client, angle, bg_brush, fg_pen, fg_brush, this.Font);
+                    WaferControl.CreateThumbnail(m_Data.StatorStart, m_Data.RearView, m_Data.TextCCW, selected, g, client, angle, bg_brush, fg_pen, fg_brush, this.Font);
 
                     // draw the position number
                     string text = (position + 1).ToString();

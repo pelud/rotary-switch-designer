@@ -415,7 +415,12 @@ namespace Rotary_Switch_Designer
                 if (form.ShowDialog() == DialogResult.OK)
                 {
                     // create new data
-                    var data = new Model.Switch();
+                    var data = new Model.Switch()
+                    {
+                        StatorStart = 0,
+                        RearView = false,
+                        TextCCW = false,
+                    };
                     data.Shafts.Add(new Model.Shaft()
                     {
                         Detents = form.Detents,
@@ -667,12 +672,16 @@ namespace Rotary_Switch_Designer
 
             using (var form = new SwitchForm()
             {
-                NumberingStartAngle = m_Data.StatorStart
+                NumberingStartAngle = m_Data.StatorStart,
+                RearView = m_Data.RearView,
+                TextCCW = m_Data.TextCCW,
             })
             {
                 if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    var start = form.NumberingStartAngle;
+                    uint start = form.NumberingStartAngle;
+                    bool rear = form.RearView;
+                    bool ccw = form.TextCCW;
                     Operation((Action<Model.Switch>)((data) =>
                     {
                         // santify checks
@@ -681,6 +690,8 @@ namespace Rotary_Switch_Designer
 
                         // update the data
                         data.StatorStart = start;
+                        data.RearView = rear;
+                        data.TextCCW = ccw;
                     }));
                 }
             }

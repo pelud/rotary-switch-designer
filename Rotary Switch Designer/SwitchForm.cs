@@ -21,5 +21,17 @@ namespace Rotary_Switch_Designer
             get { return (uint)numericUpDown1.Value; }
             set { numericUpDown1.Value = value; }
         }
+
+        public bool RearView
+        {
+            get { return rbRear.Checked; }
+            set { rbRear.Checked = value; }
+        }
+
+        public bool TextCCW
+        {
+            get { return rbCCW.Checked; }
+            set { rbCCW.Checked = value; }
+        }
     }
 }

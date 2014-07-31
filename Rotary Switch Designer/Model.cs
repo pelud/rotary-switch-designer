@@ -114,6 +114,7 @@ namespace Rotary_Switch_Designer
             private int m_Spoke = -1;
             private ObservableCollection<RotorSlice> m_RotorSlices = new ObservableCollection<RotorSlice>();
             private bool m_Shared = false;
+            private bool m_Skip = false;
             #endregion
 
             #region Constructor
@@ -194,6 +195,27 @@ namespace Rotary_Switch_Designer
                         m_Shared = value;
                         if (PropertyChanged != null)
                             PropertyChanged(this, new PropertyChangedEventArgs("Shared"));
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Indicates that this contact should be skipped and the label
+            /// numbering should continue on the next contact as if it was
+            /// not present.
+            /// </summary>
+            [XmlAttribute]
+            [DefaultValue(false)]
+            public bool Skip
+            {
+                get { return m_Skip; }
+                set
+                {
+                    if (value != m_Skip)
+                    {
+                        m_Skip = value;
+                        if (PropertyChanged != null)
+                            PropertyChanged(this, new PropertyChangedEventArgs("Skip"));
                     }
                 }
             }
@@ -460,6 +482,8 @@ namespace Rotary_Switch_Designer
             private uint m_StatorStart = 0;
             private ObservableCollection<Side> m_Sides = new ObservableCollection<Side>();
             private ObservableCollection<Shaft> m_Shafts = new ObservableCollection<Shaft>();
+            private bool m_RearView = false;
+            private bool m_TextCCW = false;
             #endregion
 
             #region Constructor / Event Handlers
@@ -544,6 +568,40 @@ namespace Rotary_Switch_Designer
             }
 
             /// <summary>
+            /// Indicates that the control should be drawn from the back, I.E. mirrored.
+            /// </summary>
+            public bool RearView
+            {
+                get { return m_RearView; }
+                set
+                {
+                    if (value != m_RearView)
+                    {
+                        m_RearView = value;
+                        if (PropertyChanged != null)
+                            PropertyChanged(this, new PropertyChangedEventArgs("RearView"));
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Indicates that the pin numbers should be drawn in the CCW direction instead of the CW direction, as seen from the front.
+            /// </summary>
+            public bool TextCCW
+            {
+                get { return m_TextCCW; }
+                set
+                {
+                    if (value != m_TextCCW)
+                    {
+                        m_TextCCW = value;
+                        if (PropertyChanged != null)
+                            PropertyChanged(this, new PropertyChangedEventArgs("TextCCW"));
+                    }
+                }
+            }
+
+            /// <summary>
             /// Represents all of the sides within the switch.
             /// </summary>
             public ObservableCollection<Side> Sides { get { return m_Sides; } }
@@ -556,10 +614,12 @@ namespace Rotary_Switch_Designer
             #endregion
         }
 
+#if false
         public interface IExportGraphics
         {
             void AddLines(Point[] lines);
             void DrawString(string text, int x, int y);
         }
+#endif
     }
 }
