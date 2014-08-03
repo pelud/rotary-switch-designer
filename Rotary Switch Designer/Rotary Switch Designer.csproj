@@ -92,6 +92,7 @@
     <Compile Include="WaferControl.Designer.cs">
       <DependentUpon>WaferControl.cs</DependentUpon>
     </Compile>
+    <Compile Include="WaferExportKiCad.cs" />
     <EmbeddedResource Include="AboutBox.resx">
       <DependentUpon>AboutBox.cs</DependentUpon>
     </EmbeddedResource>

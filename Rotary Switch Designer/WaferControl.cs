@@ -499,18 +499,6 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        public interface IGraphics
-        {
-            Size MeasureString(string text);
-            void DrawString(string text, Point TextPosition);
-            void DrawCircle(Point center, int radius);
-            void FillCircle(Point center, int radius, bool highlight);
-            void DrawPolygon(Point[] points);
-            void FillPolygon(Point[] points, bool highlight);
-            void DrawLine(Point start, Point end);
-            void DrawArc(Point center, int radius, float start_angle, float sweep_angle);
-        }
-
         public class GraphicsAdapter : IGraphics
         {
             public Graphics g { get; set; }

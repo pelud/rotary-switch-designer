@@ -12,6 +12,25 @@ using System.IO;
 
 namespace Rotary_Switch_Designer
 {
+    public interface IWaferExport
+    {
+        string Name { get; }
+        string Extension { get; }
+        void Export(Model.Switch data, string filename);
+    }
+
+    public interface IGraphics
+    {
+        Size MeasureString(string text);
+        void DrawString(string text, Point TextPosition);
+        void DrawCircle(Point center, int radius);
+        void FillCircle(Point center, int radius, bool highlight);
+        void DrawPolygon(Point[] points);
+        void FillPolygon(Point[] points, bool highlight);
+        void DrawLine(Point start, Point end);
+        void DrawArc(Point center, int radius, float start_angle, float sweep_angle);
+    }
+
     namespace Model
     {
         /// <summary>
@@ -570,6 +589,8 @@ namespace Rotary_Switch_Designer
             /// <summary>
             /// Indicates that the control should be drawn from the back, I.E. mirrored.
             /// </summary>
+            [XmlAttribute]
+            [DefaultValue(false)]
             public bool RearView
             {
                 get { return m_RearView; }
@@ -587,6 +608,8 @@ namespace Rotary_Switch_Designer
             /// <summary>
             /// Indicates that the pin numbers should be drawn in the CCW direction instead of the CW direction, as seen from the front.
             /// </summary>
+            [XmlAttribute]
+            [DefaultValue(false)]
             public bool TextCCW
             {
                 get { return m_TextCCW; }

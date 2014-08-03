@@ -38,6 +38,10 @@ namespace Rotary_Switch_Designer
         private int m_UndoIndex = 0;
         private int m_UndoSaveIndex = 0;
         private const int m_DefaultShaftPositions = 12;
+        private static IList<IWaferExport> m_ExportFormats = new List<IWaferExport>()
+        {
+            //new WaferExportKiCad()
+        };
         #endregion
 
         #region Test Data
@@ -350,7 +354,12 @@ namespace Rotary_Switch_Designer
                 if (!SaveCheck())
                     return; // cancelled
 
-                using (var dialog = new OpenFileDialog() { DefaultExt = ".wafers", Filter = "Wafer Files|*.wafers|All Files|*.*", RestoreDirectory = true })
+                using (var dialog = new OpenFileDialog()
+                {
+                    DefaultExt = ".wafers",
+                    Filter = "Wafer Files|*.wafers|All Files|*.*",
+                    RestoreDirectory = true
+                })
                 {
                     if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                     {
@@ -391,6 +400,10 @@ namespace Rotary_Switch_Designer
             shaftPropertiesToolStripMenuItem.Enabled = m_Data != null && m_Data.Shafts.Count > 0;
             string file_title = m_Filename != null ? Path.GetFileNameWithoutExtension(m_Filename) : "New Document";
             this.Text = m_Data != null ? string.Format("{0} - {1}{2}", m_Title, file_title, CanSave ? "*" : "") : m_Title;
+            exportToolStripMenuItem.Visible = m_ExportFormats != null && m_ExportFormats.Count > 0;
+            exportToolStripMenuItem.Enabled = m_Data != null && m_Data.Sides.Count > 0;
+            saveToolStripMenuItem.Enabled = m_Data != null && CanSave;
+            saveAsToolStripMenuItem.Enabled = m_Data != null && CanSave;
         }
 
         private void redoToolStripMenuItem_Click(object sender, EventArgs e)
@@ -694,6 +707,42 @@ namespace Rotary_Switch_Designer
                         data.TextCCW = ccw;
                     }));
                 }
+            }
+        }
+
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (m_Data == null || m_ExportFormats == null || m_ExportFormats.Count == 0)
+                return;
+
+            try
+            {
+                using (var dialog = new SaveFileDialog()
+                {
+                    Title = "Export",
+                    Filter = string.Join("|", m_ExportFormats.Select((format) => string.Format("{0} ({1}|*.{1}", format.Name, format.Extension))),
+                    FilterIndex = 1,
+                    OverwritePrompt = true,
+                    AutoUpgradeEnabled = true,
+                    AddExtension = true,
+                    RestoreDirectory = true,
+                })
+                {
+                    if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                    {
+                        // check that the selected item is correct
+                        if (dialog.FilterIndex < 1 || dialog.FilterIndex > m_ExportFormats.Count)
+                            throw new Exception("Invalid filter index selected");
+
+                        // export the file
+                        m_ExportFormats[dialog.FilterIndex - 1].Export(m_Data, dialog.FileName);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("Error exporting file: {0}", ex.Message), "Error Exporting File");
             }
         }
         #endregion
