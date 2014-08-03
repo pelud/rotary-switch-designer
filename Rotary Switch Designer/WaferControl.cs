@@ -179,7 +179,15 @@ namespace Rotary_Switch_Designer
 
         public static void CreateThumbnail(uint stator_start, bool rear_view, bool text_ccw, Model.Side data, Graphics g, Rectangle client, uint rotor_position, Brush bg_brush, Pen fg_pen, Brush fg_brush, Font font)
         {
-            Render(data, rotor_position, stator_start, rear_view, text_ccw, g, bg_brush, fg_pen, fg_brush, false, font, client, null, HitType.None, -1, -1);
+            g.FillRectangle(bg_brush, client);
+            var graphics = new GraphicsAdapter()
+            {
+                g = g,
+                FgPen = fg_pen,
+                FgBrush = fg_brush,
+                Font = font
+            };
+            Render(data, rotor_position, stator_start, rear_view, text_ccw, false, graphics, client, null, HitType.None, -1, -1);
         }
 
         #endregion
@@ -490,19 +498,79 @@ namespace Rotary_Switch_Designer
             }
         }
 
+        public interface IGraphics
+        {
+            Size MeasureString(string text);
+            void DrawString(string text, Point TextPosition);
+            void DrawCircle(Point center, int radius);
+            void FillCircle(Point center, int radius, bool highlight);
+            void DrawPolygon(Point[] points);
+            void FillPolygon(Point[] points, bool highlight);
+            void DrawLine(Point start, Point end);
+            void DrawArc(Point center, int radius, float start_angle, float sweep_angle);
+        }
+
+        public class GraphicsAdapter : IGraphics
+        {
+            public Graphics g { get; set; }
+            public Pen FgPen { get; set; }
+            public Brush FgBrush { get; set; }
+            public Font Font { get; set; }
+
+            public Size MeasureString(string text)
+            {
+                return Size.Round(g.MeasureString(text, Font));
+            }
+
+            public void DrawString(string text, Point TextPosition)
+            {
+                g.DrawString(text, Font, FgBrush, TextPosition.X, TextPosition.Y);
+            }
+
+            public void DrawCircle(Point center, int radius)
+            {
+                var box = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+                g.DrawEllipse(FgPen, box);
+            }
+
+            public void FillCircle(Point center, int radius, bool highlight)
+            {
+                var box = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+                g.FillEllipse(highlight ? SystemBrushes.Highlight : FgBrush, box);
+            }
+
+            public void DrawPolygon(Point[] points)
+            {
+                g.DrawPolygon(FgPen, points);
+            }
+
+            public void FillPolygon(Point[] points, bool highlight)
+            {
+                g.FillPolygon(highlight ? SystemBrushes.Highlight : FgBrush, points);
+            }
+
+            public void DrawLine(Point start, Point end)
+            {
+                g.DrawLine(FgPen, start, end);
+            }
+
+            public void DrawArc(Point center, int radius, float start_angle, float sweep_angle)
+            {
+                var box = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
+                g.DrawArc(FgPen, box, start_angle, sweep_angle);
+            }
+        }
+
         /// <summary>
         /// Draw the given side to the graphics device.
         /// </summary>
         /// <remarks>
         /// This method needs to be cleaned up.
         /// </remarks>
-        private static void Render(Model.Side data, uint rotor_position_angle, uint stator_start, bool rear_view, bool text_ccw, Graphics g, Brush bg_brush, Pen fg_pen, Brush fg_brush, bool editor_mode, Font font, Rectangle client, uint[,] fill_map, HitType hit, int hit_position, int hit_slice)
+        private static void Render(Model.Side data, uint rotor_position_angle, uint stator_start, bool rear_view, bool text_ccw, bool editor_mode, IGraphics g, Rectangle client, uint[,] fill_map, HitType hit, int hit_position, int hit_slice)
         {
             if (g == null)
                 throw new ArgumentNullException("g");
-
-            // draw the background
-            g.FillRectangle(bg_brush, client);
 
             if (data == null)
                 return; // happens when the drawing control in the visual studio editor
@@ -510,9 +578,9 @@ namespace Rotary_Switch_Designer
             // test if we should draw the text
             bool labels = false;
             var size = Math.Min(client.Width, client.Height);
-            if (g != null && font != null)
+            if (g != null)
             {
-                var label_size = g.MeasureString(data.Positions.Count.ToString(), font);
+                var label_size = g.MeasureString(data.Positions.Count.ToString());
                 if (Math.Max(label_size.Width, label_size.Height) < size * MinTextSize)
                     labels = true;
             }
@@ -569,49 +637,40 @@ namespace Rotary_Switch_Designer
                         // add the polygon for the pre-section highlight
                         if (g != null && ((hit == HitType.EdgeCCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3, j] == hit_colour)))
                         {
-                            using (var p = new GraphicsPath())
-                            {
-                                p.AddPolygon(new Point[]
+                            var p = new Point[]
                                 {
                                     p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
                                     p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
                                     p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
                                     p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
-                                });
-                                g.FillPath(SystemBrushes.Highlight, p);
-                            }
+                                };
+                            g.FillPolygon(p, true);
                         }
 
                         // add the polygon for the mid-section highlight
                         if (g != null && ((hit == HitType.Midsection && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 1, j] == hit_colour)))
                         {
-                            using (var p = new GraphicsPath())
-                            {
-                                p.AddPolygon(new Point[]
+                            var p = new Point[]
                                 {
                                     p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
                                     p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
                                     p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
                                     p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
-                                });
-                                g.FillPath(SystemBrushes.Highlight, p);
-                            }
+                                };
+                            g.FillPolygon(p, true);
                         }
 
                         // add a polygon for the post-section highlight
                         if (g != null && ((hit == HitType.EdgeCW && hit_position == ri && hit_slice == j) || (fill_map != null && fill_map[ri * 3 + 2, j] == hit_colour)))
                         {
-                            using (var p = new GraphicsPath())
-                            {
-                                p.AddPolygon(new Point[]
+                            var p = new Point[]
                                 {
                                     p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center),
                                     p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
                                     p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center),
                                     p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center)
-                                });
-                                g.FillPath(SystemBrushes.Highlight, p);
-                            }
+                                };
+                            g.FillPolygon(p, true);
                         }
                     }
                 }
@@ -628,15 +687,27 @@ namespace Rotary_Switch_Designer
                     {
                         var TextPosition = p2c(StatorAngleRad, r * TextDistance + TextPad, center);
                         var Text = (ri + 1).ToString();
-                        var TextSize = g.MeasureString(Text, font, client.Width);
+                        var TextSize = g.MeasureString(Text);
                         TextPosition.Offset(-(int)((TextSize.Width) / 2), -(int)((TextSize.Height) / 2));
-                        g.DrawString((label_index + 1).ToString(), font, fg_brush, TextPosition);
+                        g.DrawString((label_index + 1).ToString(), TextPosition);
                     }
 
                     // increase the label number
                     if (!stator.Skip)
                         label_index++;
 
+                    // draw the selector for the spoke hole
+                    var SpokePosition = p2c(StatorAngleRad, r * SpokeHoleDistance, center);
+                    if (hit == HitType.SpokeHole && hit_position == ri)
+                        g.FillCircle(SpokePosition, SpokeHoleRadius, true);
+                    else if (stator.Shared)
+                        g.FillCircle(SpokePosition, SpokeHoleRadius, false);
+
+                    // add the circle for the spoke hole
+                    if (stator.Spoke != -1 || editor_mode)
+                        g.DrawCircle(SpokePosition, SpokeHoleRadius);
+
+#if false
                     using (var p = new GraphicsPath())
                     {
                         // add the circle for the spoke hole
@@ -659,10 +730,26 @@ namespace Rotary_Switch_Designer
                                 g.FillPath(fg_brush, p);
                         }
                     }
+#endif
 
                     // draw the spoke
                     if (stator.Spoke > 0)
                     {
+                        // add the line for the spoke
+                        var SpokePosition2 = stator.Spoke - 1;
+                        var SpokeLength = Math.Min(SpokePosition2, rotor_levels);
+                        var SpokeStart = p2c(StatorAngleRad, r * SpokeHoleDistance - SpokeHoleRadius, center);
+                        var SpokeEndRadius = r * (RotorMinDistance + SpokeLength * RotorLevelSize + RotorLevelSize / 2);
+                        var SpokeEnd = p2c(StatorAngleRad, SpokeEndRadius, center);
+                        g.DrawLine(SpokeStart, SpokeEnd);
+
+                        // add the arrow head
+                        var SpokeHead = p2c(StatorAngleRad, SpokeEndRadius + SpokeHoleRadius, center);
+                        var SpokeHeadVector = new Point(SpokeHead.X - SpokeEnd.X, SpokeHead.Y - SpokeEnd.Y);
+                        var SpokeHead2a = new Point(SpokeHead.X + SpokeHeadVector.Y, SpokeHead.Y - SpokeHeadVector.X);
+                        var SpokeHead2b = new Point(SpokeHead.X - SpokeHeadVector.Y, SpokeHead.Y + SpokeHeadVector.X);
+                        g.FillPolygon(new Point[] { SpokeHead2a, SpokeEnd, SpokeHead2b, SpokeHead2a }, false);
+#if false
                         using (var p = new GraphicsPath())
                         {
                             // add the line for the spoke
@@ -693,6 +780,7 @@ namespace Rotary_Switch_Designer
                                     g.FillPath(brush, p2);
                             }
                         }
+#endif
                     }
                 }
 
@@ -715,71 +803,53 @@ namespace Rotary_Switch_Designer
                             {
                                 // start (ccw) vertical edge
                                 if (rotor_ccw.RotorSlices == null || j >= rotor_ccw.RotorSlices.Count || !rotor_ccw.RotorSlices[j].EdgeCW)
-                                    g.DrawLine(fg_pen, p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
+                                    g.DrawLine(p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorStartAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
 
                                 // inner pre gap horizontal edge
                                 if (j == 0 || slices[j - 1] == null || !slices[j - 1].EdgeCCW)
-                                {
-                                    var box = new Rectangle(center.X - RotorStartRadius, center.Y - RotorStartRadius, RotorStartRadius * 2, RotorStartRadius * 2);
-                                    g.DrawArc(fg_pen, box, RotorStartAngleDeg, RotorPreGapAngleDeg - RotorStartAngleDeg);
-                                }
+                                    g.DrawArc(center, RotorStartRadius, RotorStartAngleDeg, RotorPreGapAngleDeg - RotorStartAngleDeg);
 
                                 // outer pre gap horizontal edge
                                 if (j == (slices.Count - 1) || slices[j + 1] == null || !slices[j + 1].EdgeCCW)
-                                {
-                                    var box = new Rectangle(center.X - RotorEndRadius, center.Y - RotorEndRadius, RotorEndRadius * 2, RotorEndRadius * 2);
-                                    g.DrawArc(fg_pen, box, RotorStartAngleDeg, RotorPreGapAngleDeg - RotorStartAngleDeg);
-                                }
+                                    g.DrawArc(center, RotorEndRadius, RotorStartAngleDeg, RotorPreGapAngleDeg - RotorStartAngleDeg);
                             }
 
                             if ((slice.EdgeCCW && !slice.Midsection) || (!slice.EdgeCCW && slice.Midsection))
                             {
                                 // pre gap (ccw) vertical edge
-                                g.DrawLine(fg_pen, p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
+                                g.DrawLine(p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorPreGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
                             }
 
                             if (slice.Midsection)
                             {
                                 // inner horizontal edge
                                 if (j == 0 || slices[j - 1] == null || !slices[j - 1].Midsection)
-                                {
-                                    var box = new Rectangle(center.X - RotorStartRadius, center.Y - RotorStartRadius, RotorStartRadius * 2, RotorStartRadius * 2);
-                                    g.DrawArc(fg_pen, box, RotorPreGapAngleDeg, RotorPostGapAngleDeg - RotorPreGapAngleDeg);
-                                }
+                                    g.DrawArc(center, RotorStartRadius, RotorPreGapAngleDeg, RotorPostGapAngleDeg - RotorPreGapAngleDeg);
 
                                 // outer horizonal edge
                                 if (j == (slices.Count - 1) || slices[j + 1] == null || !slices[j + 1].Midsection)
-                                {
-                                    var box = new Rectangle(center.X - RotorEndRadius, center.Y - RotorEndRadius, RotorEndRadius * 2, RotorEndRadius * 2);
-                                    g.DrawArc(fg_pen, box, RotorPreGapAngleDeg, RotorPostGapAngleDeg - RotorPreGapAngleDeg);
-                                }
+                                    g.DrawArc(center, RotorEndRadius, RotorPreGapAngleDeg, RotorPostGapAngleDeg - RotorPreGapAngleDeg);
                             }
 
                             if ((slice.EdgeCW && !slice.Midsection) || (!slice.EdgeCW && slice.Midsection))
                             {
                                 // post gap (cw) vertical edge
-                                g.DrawLine(fg_pen, p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
+                                g.DrawLine(p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorPostGapAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
                             }
 
                             if (slice.EdgeCW)
                             {
                                 // inner post gap horizontal edge
                                 if (j == 0 || slices[j - 1] == null || !slices[j - 1].EdgeCW)
-                                {
-                                    var box = new Rectangle(center.X - RotorStartRadius, center.Y - RotorStartRadius, RotorStartRadius * 2, RotorStartRadius * 2);
-                                    g.DrawArc(fg_pen, box, RotorPostGapAngleDeg, RotorEndAngleDeg - RotorPostGapAngleDeg);
-                                }
+                                    g.DrawArc(center, RotorStartRadius, RotorPostGapAngleDeg, RotorEndAngleDeg - RotorPostGapAngleDeg);
 
                                 // outer post gap horizontal edge
                                 if (j == (slices.Count - 1) || slices[j + 1] == null || !slices[j + 1].EdgeCW)
-                                {
-                                    var box = new Rectangle(center.X - RotorEndRadius, center.Y - RotorEndRadius, RotorEndRadius * 2, RotorEndRadius * 2);
-                                    g.DrawArc(fg_pen, box, RotorPostGapAngleDeg, RotorEndAngleDeg - RotorPostGapAngleDeg);
-                                }
+                                    g.DrawArc(center, RotorEndRadius, RotorPostGapAngleDeg, RotorEndAngleDeg - RotorPostGapAngleDeg);
 
                                 // end (cw) vertical edge
                                 if (rotor_cw.RotorSlices == null || j >= rotor_cw.RotorSlices.Count || !rotor_cw.RotorSlices[j].EdgeCCW)
-                                    g.DrawLine(fg_pen, p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
+                                    g.DrawLine(p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorStartRadius, center), p2c(RotorEndAngleDeg / 360.0 * 2 * Math.PI, RotorEndRadius, center));
                             }
                         }
                     }
@@ -791,14 +861,24 @@ namespace Rotary_Switch_Designer
         {
             try
             {
+                // draw the background
                 var g = e.Graphics;
+                g.FillRectangle(m_BgBrush, this.ClientRectangle);
 
                 // check if control is pressed
                 var modifiers = Control.ModifierKeys;
                 bool fill = (modifiers & Keys.Control) != 0;
 
+                var graphics = new GraphicsAdapter()
+                {
+                    g = g,
+                    FgPen = m_FgPen,
+                    FgBrush = m_FgBrush,
+                    Font = this.Font
+                };
+
                 // draw the control
-                Render(m_Data, this.RotorPosition, m_StatorStart, this.RearView, this.TextCCW, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, fill ? m_FloodFillColourMap : null, !m_HitTrack || m_HitMatch ? m_Hit : HitType.None, m_HitPosition, m_HitSlice);
+                Render(m_Data, this.RotorPosition, m_StatorStart, this.RearView, this.TextCCW, true, graphics, this.ClientRectangle, fill ? m_FloodFillColourMap : null, !m_HitTrack || m_HitMatch ? m_Hit : HitType.None, m_HitPosition, m_HitSlice);
 
                 // draw a border in design mode
                 if (this.DesignMode)
