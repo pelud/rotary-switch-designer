@@ -46,6 +46,7 @@ namespace Rotary_Switch_Designer
         private int m_HitSlice = -1;
         private bool m_HitMatch = false;
         private bool m_HitTrack = false;
+        private bool m_FillMode = false;
         private Brush m_BgBrush;
         private Pen m_FgPen;
         private Brush m_FgBrush;
@@ -616,14 +617,14 @@ namespace Rotary_Switch_Designer
             int ri_increment = text_ccw ? -1 : 1;
             for (int ri = ri_begin; ri != ri_end; ri += ri_increment)
             {
-                var rotor = WaferPositions[ri];
+                var position = WaferPositions[ri];
                 var ri_ccw = (int)(((uint)ri + (uint)WaferPositions.Count - 1) % (uint)WaferPositions.Count);
                 var rotor_ccw = WaferPositions[ri_ccw];
                 var ri_cw = (int)(((uint)ri + 1) % (uint)WaferPositions.Count);
                 var rotor_cw = WaferPositions[ri_cw];
-                if (rotor != null && rotor_ccw != null && rotor_cw != null && rotor.RotorSlices != null && rotor.RotorSlices.Count > 0)
+                if (position != null && rotor_ccw != null && rotor_cw != null && position.RotorSlices != null && position.RotorSlices.Count > 0)
                 {
-                    var slices = rotor.RotorSlices;
+                    var slices = position.RotorSlices;
                     for (int j = 0; j < slices.Count; ++j)
                     {
                         var slice = slices[j];
@@ -673,17 +674,12 @@ namespace Rotary_Switch_Designer
                             g.FillPolygon(p, true);
                         }
                     }
-                }
 
-                // get the position associated with the stator
-                var stator = WaferPositions[ri];
-                if (stator != null)
-                {
                     // outside angle
                     var StatorAngleRad = flip((stator_start / 360.0f + ((float)ri + AngleOffset) / WaferPositions.Count) * 2.0f * (float)Math.PI - (float)Math.PI / 2, (float)Math.PI / 2, rear_view, 2 * (float)Math.PI);
 
                     // draw the text
-                    if (g != null && !stator.Skip && labels && (editor_mode || stator.Spoke != -1))
+                    if (g != null && !position.Skip && labels && (editor_mode || position.Spoke != -1))
                     {
                         var TextPosition = p2c(StatorAngleRad, r * TextDistance + TextPad, center);
                         var Text = (ri + 1).ToString();
@@ -693,50 +689,25 @@ namespace Rotary_Switch_Designer
                     }
 
                     // increase the label number
-                    if (!stator.Skip)
+                    if (!position.Skip)
                         label_index++;
 
                     // draw the selector for the spoke hole
                     var SpokePosition = p2c(StatorAngleRad, r * SpokeHoleDistance, center);
                     if (hit == HitType.SpokeHole && hit_position == ri)
                         g.FillCircle(SpokePosition, SpokeHoleRadius, true);
-                    else if (stator.Shared)
+                    else if (position.Shared)
                         g.FillCircle(SpokePosition, SpokeHoleRadius, false);
 
                     // add the circle for the spoke hole
-                    if (stator.Spoke != -1 || editor_mode)
+                    if (position.Spoke != -1 || editor_mode)
                         g.DrawCircle(SpokePosition, SpokeHoleRadius);
 
-#if false
-                    using (var p = new GraphicsPath())
-                    {
-                        // add the circle for the spoke hole
-                        var SpokePosition = p2c(StatorAngleRad, r * SpokeHoleDistance, center); ;
-                        var SpokeHole = new Rectangle(SpokePosition.X - SpokeHoleRadius, SpokePosition.Y - SpokeHoleRadius, SpokeHoleRadius * 2, SpokeHoleRadius * 2);
-                        p.AddEllipse(SpokeHole);
-
-                        // draw the spoke hole
-                        if (g != null && stator.Spoke != -1)
-                            g.DrawPath(fg_pen, p);
-                        else if (g != null && editor_mode)
-                            g.DrawPath(SystemPens.GrayText, p);
-
-                        if (g != null)
-                        {
-                            // draw the selector for the spoke hole
-                            if (hit == HitType.SpokeHole && hit_position == ri)
-                                g.FillPath(SystemBrushes.Highlight, p);
-                            else if (stator.Shared)
-                                g.FillPath(fg_brush, p);
-                        }
-                    }
-#endif
-
                     // draw the spoke
-                    if (stator.Spoke > 0)
+                    if (position.Spoke > 0)
                     {
                         // add the line for the spoke
-                        var SpokePosition2 = stator.Spoke - 1;
+                        var SpokePosition2 = position.Spoke - 1;
                         var SpokeLength = Math.Min(SpokePosition2, rotor_levels);
                         var SpokeStart = p2c(StatorAngleRad, r * SpokeHoleDistance - SpokeHoleRadius, center);
                         var SpokeEndRadius = r * (RotorMinDistance + SpokeLength * RotorLevelSize + RotorLevelSize / 2);
@@ -749,44 +720,8 @@ namespace Rotary_Switch_Designer
                         var SpokeHead2a = new Point(SpokeHead.X + SpokeHeadVector.Y, SpokeHead.Y - SpokeHeadVector.X);
                         var SpokeHead2b = new Point(SpokeHead.X - SpokeHeadVector.Y, SpokeHead.Y + SpokeHeadVector.X);
                         g.FillPolygon(new Point[] { SpokeHead2a, SpokeEnd, SpokeHead2b, SpokeHead2a }, false);
-#if false
-                        using (var p = new GraphicsPath())
-                        {
-                            // add the line for the spoke
-                            var SpokePosition2 = stator.Spoke - 1;
-                            var SpokeLength = Math.Min(SpokePosition2, rotor_levels);
-                            var SpokeStart = p2c(StatorAngleRad, r * SpokeHoleDistance - SpokeHoleRadius, center);
-                            var SpokeEndRadius = r * (RotorMinDistance + SpokeLength * RotorLevelSize + RotorLevelSize / 2);
-                            var SpokeEnd = p2c(StatorAngleRad, SpokeEndRadius, center);
-                            p.AddLine(SpokeStart, SpokeEnd);
-
-                            var pen = hit == HitType.SpokeHole && hit_position == ri ? SystemPens.HotTrack : fg_pen;
-                            var brush = hit == HitType.SpokeHole && hit_position == ri ? SystemBrushes.HotTrack : fg_brush;
-
-                            // draw the spoke line
-                            if (g != null)
-                                g.DrawLine(pen, SpokeStart, SpokeEnd);
-
-                            using (var p2 = new GraphicsPath())
-                            {
-                                // add the arrow head
-                                var SpokeHead = p2c(StatorAngleRad, SpokeEndRadius + SpokeHoleRadius, center);
-                                var SpokeHeadVector = new Point(SpokeHead.X - SpokeEnd.X, SpokeHead.Y - SpokeEnd.Y);
-                                var SpokeHead2a = new Point(SpokeHead.X + SpokeHeadVector.Y, SpokeHead.Y - SpokeHeadVector.X);
-                                var SpokeHead2b = new Point(SpokeHead.X - SpokeHeadVector.Y, SpokeHead.Y + SpokeHeadVector.X);
-                                p2.AddPolygon(new Point[] { SpokeHead2a, SpokeEnd, SpokeHead2b, SpokeHead2a });
-
-                                if (g != null)
-                                    g.FillPath(brush, p2);
-                            }
-                        }
-#endif
                     }
-                }
 
-                if (rotor != null && rotor_ccw != null && rotor_cw != null && rotor.RotorSlices != null && rotor.RotorSlices.Count > 0)
-                {
-                    var slices = rotor.RotorSlices;
                     for (int j = 0; j < slices.Count; ++j)
                     {
                         var slice = slices[j];
@@ -866,8 +801,7 @@ namespace Rotary_Switch_Designer
                 g.FillRectangle(m_BgBrush, this.ClientRectangle);
 
                 // check if control is pressed
-                var modifiers = Control.ModifierKeys;
-                bool fill = (modifiers & Keys.Control) != 0;
+                bool fill = m_FillMode || (Control.ModifierKeys & Keys.Control) != 0;
 
                 var graphics = new GraphicsAdapter()
                 {
@@ -899,6 +833,17 @@ namespace Rotary_Switch_Designer
             HitTest(m_Data, this.RotorPosition, this.StatorStart, this.RearView, this.ClientRectangle, e.Location, out m_Hit, out m_HitPosition, out m_HitSlice);
             m_HitMatch = true;
             m_HitTrack = true;
+
+            // start the button hold timer
+            m_FillMode = false;
+            timer1.Enabled = true;
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            timer1.Enabled = false;
+            m_FillMode = true;
+            PostRefresh();
         }
 
         private void Wafer_MouseMove(object sender, MouseEventArgs e)
@@ -912,6 +857,12 @@ namespace Rotary_Switch_Designer
             if (m_HitTrack)
             {
                 m_HitMatch = hit == m_Hit && hit_position == m_HitPosition && hit_slice == m_HitSlice;
+                if (!m_HitMatch)
+                {
+                    timer1.Enabled = false;
+                    m_FillMode = false;
+                    timer1.Enabled = true;
+                }
             }
             else
             {
@@ -925,6 +876,9 @@ namespace Rotary_Switch_Designer
 
         private void WaferControl_MouseUp(object sender, MouseEventArgs e)
         {
+            timer1.Enabled = false;
+            bool fill = m_FillMode;
+            m_FillMode = false;
             if (!m_HitTrack)
                 return;
             m_HitTrack = false;
@@ -932,7 +886,6 @@ namespace Rotary_Switch_Designer
                 return;
             if (!this.Focused)
                 return;
-
 
             // verify the hit position
             HitType test_hit;
@@ -944,8 +897,7 @@ namespace Rotary_Switch_Designer
                 return;
 
             // check if control is pressed
-            var modifiers = Control.ModifierKeys;
-            bool fill = (modifiers & Keys.Control) != 0;
+            fill = fill || (Control.ModifierKeys & Keys.Control) != 0;
 
             // check if the user clicked on the spoke
             if (m_Hit == HitType.SpokeHole && m_HitPosition != -1)

@@ -18,6 +18,7 @@
             this.components = new System.ComponentModel.Container();
             this.SpokeMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // SpokeMenuStrip
@@ -25,6 +26,11 @@
             this.SpokeMenuStrip.Name = "SpokeMenuStrip";
             this.SpokeMenuStrip.Size = new System.Drawing.Size(61, 4);
             this.SpokeMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.SpokeMenuStrip_ItemClicked);
+            // 
+            // timer1
+            // 
+            this.timer1.Interval = 1000;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // WaferControl
             // 
@@ -45,5 +51,6 @@
 
         private System.Windows.Forms.ContextMenuStrip SpokeMenuStrip;
         private System.Windows.Forms.ToolTip toolTip1;
+        private System.Windows.Forms.Timer timer1;
     }
 }
