@@ -32,7 +32,6 @@ namespace Rotary_Switch_Designer
         #region Variables
         private Model.Side m_Data = null;
         private uint m_RotorPosition = 0;
-        private Point? m_MousePosition = null;
         private const double SpokeHoleSize = .02;
         private const double SpokeHoleDistance = 0.75;
         private const double TextDistance = 0.85;
@@ -45,6 +44,8 @@ namespace Rotary_Switch_Designer
         private HitType m_Hit = HitType.None;
         private int m_HitPosition = -1;
         private int m_HitSlice = -1;
+        private bool m_HitMatch = false;
+        private bool m_HitTrack = false;
         private Brush m_BgBrush;
         private Pen m_FgPen;
         private Brush m_FgBrush;
@@ -178,10 +179,7 @@ namespace Rotary_Switch_Designer
 
         public static void CreateThumbnail(uint stator_start, bool rear_view, bool text_ccw, Model.Side data, Graphics g, Rectangle client, uint rotor_position, Brush bg_brush, Pen fg_pen, Brush fg_brush, Font font)
         {
-            HitType hit;
-            int hit_position;
-            int hit_slice;
-            Render(data, rotor_position, stator_start, rear_view, text_ccw, g, bg_brush, fg_pen, fg_brush, false, font, client, null, null, out hit, out hit_position, out hit_slice);
+            Render(data, rotor_position, stator_start, rear_view, text_ccw, g, bg_brush, fg_pen, fg_brush, false, font, client, null, HitType.None, -1, -1);
         }
 
         #endregion
@@ -336,36 +334,16 @@ namespace Rotary_Switch_Designer
             return angle;
         }
 
-        /// <summary>
-        /// Draw the given side to the graphics device and perform any mouse hit tracking.
-        /// </summary>
-        /// <remarks>
-        /// This method needs to be cleaned up.
-        /// </remarks>
-        private static void Render(Model.Side data, uint rotor_position_angle, uint stator_start, bool rear_view, bool text_ccw, Graphics g, Brush bg_brush, Pen fg_pen, Brush fg_brush, bool editor_mode, Font font, Rectangle client, Point? mouse, uint[,] fill_map, out HitType hit, out int hit_position, out int hit_slice)
+        private static void HitTest(Model.Side data, uint rotor_position_angle, uint stator_start, bool rear_view, Rectangle client, Point mouse, out HitType hit, out int hit_position, out int hit_slice)
         {
             hit = HitType.None;
             hit_position = -1;
             hit_slice = -1;
-
-            // draw the background
-            if (g != null)
-                g.FillRectangle(bg_brush, client);
-
             if (data == null)
                 return;
 
-            // test if we should draw the text
-            bool labels = false;
+            // perform the hit tracking
             var size = Math.Min(client.Width, client.Height);
-            if (g != null && font != null)
-            {
-                var label_size = g.MeasureString(data.Positions.Count.ToString(), font);
-                if (Math.Max(label_size.Width, label_size.Height) < size * MinTextSize)
-                    labels = true;
-            }
-
-            // first pass: perform the hit tracking
             var WaferPositions = data.Positions;
             var rotor_levels = data.RotorLevels();
             var center = new Point(client.Left + client.Width / 2, client.Top + client.Height / 2);
@@ -373,7 +351,6 @@ namespace Rotary_Switch_Designer
             var AngleOffset = 0.5f;
             var RotorLevelSize = (RotorMaxDistance - RotorMinDistance) / rotor_levels;
             var SpokeHoleRadius = (int)(Math.Min(client.Width, client.Height) * SpokeHoleSize);
-            uint hit_colour = 0;
             for (int ri = 0; ri < WaferPositions.Count; ++ri)
             {
                 var rotor = WaferPositions[ri];
@@ -437,13 +414,11 @@ namespace Rotary_Switch_Designer
                             });
 
                             // check if the mouse is over the pre-section
-                            if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
+                            if (hit == HitType.None && p.IsVisible(mouse))
                             {
                                 hit = HitType.EdgeCCW;
                                 hit_position = ri;
                                 hit_slice = j;
-                                if (fill_map != null)
-                                    hit_colour = fill_map[ri * 3, j];
                             }
                         }
 
@@ -459,13 +434,11 @@ namespace Rotary_Switch_Designer
                             });
 
                             // check if the mouse is over the mid-section
-                            if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
+                            if (hit == HitType.None && p.IsVisible(mouse))
                             {
                                 hit = HitType.Midsection;
                                 hit_position = ri;
                                 hit_slice = j;
-                                if (fill_map != null)
-                                    hit_colour = fill_map[ri * 3 + 1, j];
                             }
                         }
 
@@ -481,20 +454,94 @@ namespace Rotary_Switch_Designer
                             });
 
                             // check if the mouse is over the post-section
-                            if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
+                            if (hit == HitType.None && p.IsVisible(mouse))
                             {
                                 hit = HitType.EdgeCW;
                                 hit_position = ri;
                                 hit_slice = j;
-                                if (fill_map != null)
-                                    hit_colour = fill_map[ri * 3 + 2, j];
                             }
                         }
                     }
                 }
+
+                // get the position associated with the stator
+                var stator = WaferPositions[ri];
+                if (stator != null)
+                {
+                    // outside angle
+                    var StatorAngleRad = flip((stator_start / 360.0f + ((float)ri + AngleOffset) / WaferPositions.Count) * 2.0f * (float)Math.PI - (float)Math.PI / 2, (float)Math.PI / 2, rear_view, 2 * (float)Math.PI);
+
+                    using (var p = new GraphicsPath())
+                    {
+                        // add the circle for the spoke hole
+                        var SpokePosition = p2c(StatorAngleRad, r * SpokeHoleDistance, center); ;
+                        var SpokeHole = new Rectangle(SpokePosition.X - SpokeHoleRadius, SpokePosition.Y - SpokeHoleRadius, SpokeHoleRadius * 2, SpokeHoleRadius * 2);
+                        p.AddEllipse(SpokeHole);
+
+                        // check if the mouse is over the hole for the spoke
+                        if (hit == HitType.None && p.IsVisible(mouse))
+                        {
+                            hit = HitType.SpokeHole;
+                            hit_position = ri;
+                            hit_slice = -1;
+                        }
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draw the given side to the graphics device.
+        /// </summary>
+        /// <remarks>
+        /// This method needs to be cleaned up.
+        /// </remarks>
+        private static void Render(Model.Side data, uint rotor_position_angle, uint stator_start, bool rear_view, bool text_ccw, Graphics g, Brush bg_brush, Pen fg_pen, Brush fg_brush, bool editor_mode, Font font, Rectangle client, uint[,] fill_map, HitType hit, int hit_position, int hit_slice)
+        {
+            if (g == null)
+                throw new ArgumentNullException("g");
+
+            // draw the background
+            g.FillRectangle(bg_brush, client);
+
+            if (data == null)
+                return; // happens when the drawing control in the visual studio editor
+
+            // test if we should draw the text
+            bool labels = false;
+            var size = Math.Min(client.Width, client.Height);
+            if (g != null && font != null)
+            {
+                var label_size = g.MeasureString(data.Positions.Count.ToString(), font);
+                if (Math.Max(label_size.Width, label_size.Height) < size * MinTextSize)
+                    labels = true;
             }
 
-            // second pass: do the spoke hole hit tracking and the actual drawing
+            // check if we should draw an area
+            uint hit_colour = 0;
+            if (fill_map != null && hit_position != -1 && hit_slice != -1)
+            {
+                switch (hit)
+                {
+                    case HitType.EdgeCCW:
+                        hit_colour = fill_map[hit_position * 3, hit_slice];
+                        break;
+                    case HitType.Midsection:
+                        hit_colour = fill_map[hit_position * 3 + 1, hit_slice];
+                        break;
+                    case HitType.EdgeCW:
+                        hit_colour = fill_map[hit_position * 3 + 2, hit_slice];
+                        break;
+                }
+            }
+
+            var WaferPositions = data.Positions;
+            var rotor_levels = data.RotorLevels();
+            var center = new Point(client.Left + client.Width / 2, client.Top + client.Height / 2);
+            var r = size / 2;
+            var AngleOffset = 0.5f;
+            var RotorLevelSize = (RotorMaxDistance - RotorMinDistance) / rotor_levels;
+            var SpokeHoleRadius = (int)(Math.Min(client.Width, client.Height) * SpokeHoleSize);
             int label_index = 0;
             int ri_begin = text_ccw ? WaferPositions.Count - 1 : 0;
             int ri_end = text_ccw ? -1 : WaferPositions.Count;
@@ -602,13 +649,6 @@ namespace Rotary_Switch_Designer
                             g.DrawPath(fg_pen, p);
                         else if (g != null && editor_mode)
                             g.DrawPath(SystemPens.GrayText, p);
-
-                        // check if the mouse is over the hole for the spoke
-                        if (mouse != null && hit == HitType.None && p.IsVisible(mouse.Value))
-                        {
-                            hit = HitType.SpokeHole;
-                            hit_position = ri;
-                        }
 
                         if (g != null)
                         {
@@ -758,7 +798,7 @@ namespace Rotary_Switch_Designer
                 bool fill = (modifiers & Keys.Control) != 0;
 
                 // draw the control
-                Render(m_Data, this.RotorPosition, m_StatorStart, this.RearView, this.TextCCW, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
+                Render(m_Data, this.RotorPosition, m_StatorStart, this.RearView, this.TextCCW, g, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, fill ? m_FloodFillColourMap : null, !m_HitTrack || m_HitMatch ? m_Hit : HitType.None, m_HitPosition, m_HitSlice);
 
                 // draw a border in design mode
                 if (this.DesignMode)
@@ -773,32 +813,59 @@ namespace Rotary_Switch_Designer
             finally { }
         }
 
-        private void Wafer_MouseMove(object sender, MouseEventArgs e)
+        private void WaferControl_MouseDown(object sender, MouseEventArgs e)
         {
-            m_MousePosition = e.Location;
-            PostRefresh();
+            // update the hit position
+            HitTest(m_Data, this.RotorPosition, this.StatorStart, this.RearView, this.ClientRectangle, e.Location, out m_Hit, out m_HitPosition, out m_HitSlice);
+            m_HitMatch = true;
+            m_HitTrack = true;
         }
 
-        private void WaferControl_MouseLeave(object sender, EventArgs e)
+        private void Wafer_MouseMove(object sender, MouseEventArgs e)
         {
-            m_MousePosition = null;
+            // update the hit position
+            HitType hit;
+            int hit_position;
+            int hit_slice;
+            HitTest(m_Data, this.RotorPosition, this.StatorStart, this.RearView, this.ClientRectangle, e.Location, out hit, out hit_position, out hit_slice);
+
+            if (m_HitTrack)
+            {
+                m_HitMatch = hit == m_Hit && hit_position == m_HitPosition && hit_slice == m_HitSlice;
+            }
+            else
+            {
+                m_Hit = hit;
+                m_HitPosition = hit_position;
+                m_HitSlice = hit_slice;
+            }
+
             PostRefresh();
         }
 
         private void WaferControl_MouseUp(object sender, MouseEventArgs e)
         {
+            if (!m_HitTrack)
+                return;
+            m_HitTrack = false;
             if (m_Data == null)
                 return;
             if (!this.Focused)
                 return;
 
+
+            // verify the hit position
+            HitType test_hit;
+            int test_hit_position;
+            int test_hit_slice;
+            HitTest(m_Data, this.RotorPosition, this.StatorStart, this.RearView, this.ClientRectangle, e.Location, out test_hit, out test_hit_position, out test_hit_slice);
+            bool test_hitmatch = test_hit == m_Hit && test_hit_position == m_HitPosition && test_hit_slice == m_HitSlice;
+            if (!test_hitmatch)
+                return;
+
             // check if control is pressed
             var modifiers = Control.ModifierKeys;
             bool fill = (modifiers & Keys.Control) != 0;
-
-            // update the hit position
-            m_MousePosition = e.Location;
-            Render(m_Data, this.RotorPosition, m_StatorStart, this.RearView, this.TextCCW, null, m_BgBrush, m_FgPen, m_FgBrush, true, this.Font, this.ClientRectangle, this.m_MousePosition, fill ? m_FloodFillColourMap : null, out m_Hit, out m_HitPosition, out m_HitSlice);
 
             // check if the user clicked on the spoke
             if (m_Hit == HitType.SpokeHole && m_HitPosition != -1)

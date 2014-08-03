@@ -157,7 +157,7 @@
     </Side>
     <Side Name="REAR DECK REAR SIDE" Shaft="0" ShaftPosition="1" ShaftPositionRear="true">
       <Positions>
-        <Position>
+        <Position Spoke="0">
           <RotorSlices>
             <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
             <RotorSlice />

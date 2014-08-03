@@ -23,7 +23,7 @@
             // SpokeMenuStrip
             // 
             this.SpokeMenuStrip.Name = "SpokeMenuStrip";
-            this.SpokeMenuStrip.Size = new System.Drawing.Size(153, 26);
+            this.SpokeMenuStrip.Size = new System.Drawing.Size(61, 4);
             this.SpokeMenuStrip.ItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.SpokeMenuStrip_ItemClicked);
             // 
             // WaferControl
@@ -34,7 +34,7 @@
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Wafer_Paint);
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.WaferControl_KeyDown);
             this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.WaferControl_KeyUp);
-            this.MouseLeave += new System.EventHandler(this.WaferControl_MouseLeave);
+            this.MouseDown += new System.Windows.Forms.MouseEventHandler(this.WaferControl_MouseDown);
             this.MouseMove += new System.Windows.Forms.MouseEventHandler(this.Wafer_MouseMove);
             this.MouseUp += new System.Windows.Forms.MouseEventHandler(this.WaferControl_MouseUp);
             this.ResumeLayout(false);
