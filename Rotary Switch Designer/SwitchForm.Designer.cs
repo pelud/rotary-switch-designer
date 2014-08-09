@@ -40,6 +40,8 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.rbCCW = new System.Windows.Forms.RadioButton();
             this.rbCW = new System.Windows.Forms.RadioButton();
+            this.label4 = new System.Windows.Forms.Label();
+            this.SymbolNameTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
@@ -69,7 +71,7 @@
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(169, 109);
+            this.buttonCancel.Location = new System.Drawing.Point(158, 122);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 30);
             this.buttonCancel.TabIndex = 3;
@@ -79,7 +81,7 @@
             // buttonOK
             // 
             this.buttonOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.buttonOK.Location = new System.Drawing.Point(88, 109);
+            this.buttonOK.Location = new System.Drawing.Point(77, 122);
             this.buttonOK.Name = "buttonOK";
             this.buttonOK.Size = new System.Drawing.Size(75, 30);
             this.buttonOK.TabIndex = 2;
@@ -166,13 +168,31 @@
             this.rbCW.Text = "CW";
             this.rbCW.UseVisualStyleBackColor = true;
             // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(12, 88);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(75, 13);
+            this.label4.TabIndex = 8;
+            this.label4.Text = "Symbol Name:";
+            // 
+            // SymbolNameTextBox
+            // 
+            this.SymbolNameTextBox.Location = new System.Drawing.Point(134, 85);
+            this.SymbolNameTextBox.Name = "SymbolNameTextBox";
+            this.SymbolNameTextBox.Size = new System.Drawing.Size(99, 20);
+            this.SymbolNameTextBox.TabIndex = 9;
+            // 
             // SwitchForm
             // 
             this.AcceptButton = this.buttonOK;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(256, 151);
+            this.ClientSize = new System.Drawing.Size(254, 164);
+            this.Controls.Add(this.SymbolNameTextBox);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.label2);
@@ -207,5 +227,7 @@
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.RadioButton rbCCW;
         private System.Windows.Forms.RadioButton rbCW;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox SymbolNameTextBox;
     }
 }

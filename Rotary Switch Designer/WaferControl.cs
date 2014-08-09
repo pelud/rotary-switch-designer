@@ -178,19 +178,6 @@ namespace Rotary_Switch_Designer
             }
         }
 
-        public static void CreateThumbnail(uint stator_start, bool rear_view, bool text_ccw, Model.Side data, Graphics g, Rectangle client, uint rotor_position, Brush bg_brush, Pen fg_pen, Brush fg_brush, Font font)
-        {
-            g.FillRectangle(bg_brush, client);
-            var graphics = new GraphicsAdapter()
-            {
-                g = g,
-                FgPen = fg_pen,
-                FgBrush = fg_brush,
-                Font = font
-            };
-            Render(data, rotor_position, stator_start, rear_view, text_ccw, false, graphics, client, null, HitType.None, -1, -1);
-        }
-
         #endregion
 
         #region Event Handlers
@@ -548,6 +535,28 @@ namespace Rotary_Switch_Designer
                 var box = new Rectangle(center.X - radius, center.Y - radius, radius * 2, radius * 2);
                 g.DrawArc(FgPen, box, start_angle, sweep_angle);
             }
+
+            public void AddPin(System.Drawing.Point center, int number)
+            {
+            }
+        }
+
+        public static void CreateThumbnail(uint stator_start, bool rear_view, bool text_ccw, Model.Side data, Graphics g, Rectangle client, uint rotor_position, Brush bg_brush, Pen fg_pen, Brush fg_brush, Font font)
+        {
+            g.FillRectangle(bg_brush, client);
+            var graphics = new GraphicsAdapter()
+            {
+                g = g,
+                FgPen = fg_pen,
+                FgBrush = fg_brush,
+                Font = font
+            };
+            Draw(graphics, client, data, rotor_position, stator_start, rear_view, text_ccw, false);
+        }
+
+        public static void Draw(IGraphics g, Rectangle client, Model.Side data, uint rotor_position_angle, uint stator_start, bool rear_view, bool text_ccw, bool schematic)
+        {
+            Render(data, rotor_position_angle, stator_start, rear_view, text_ccw, false, g, client, null, HitType.None, -1, -1);
         }
 
         /// <summary>
@@ -676,10 +685,6 @@ namespace Rotary_Switch_Designer
                         g.DrawString((label_index + 1).ToString(), TextPosition);
                     }
 
-                    // increase the label number
-                    if (!position.Skip)
-                        label_index++;
-
                     // draw the selector for the spoke hole
                     var SpokePosition = p2c(StatorAngleRad, r * SpokeHoleDistance, center);
                     if (hit == HitType.SpokeHole && hit_position == ri)
@@ -689,7 +694,10 @@ namespace Rotary_Switch_Designer
 
                     // add the circle for the spoke hole
                     if (position.Spoke != -1 || editor_mode)
+                    {
                         g.DrawCircle(SpokePosition, SpokeHoleRadius);
+                        g.AddPin(SpokePosition, label_index + 1);
+                    }
 
                     // draw the spoke
                     if (position.Spoke > 0)
@@ -776,6 +784,10 @@ namespace Rotary_Switch_Designer
                             }
                         }
                     }
+
+                    // increase the label number
+                    if (!position.Skip)
+                        label_index++;
                 }
             }
         }

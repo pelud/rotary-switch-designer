@@ -33,5 +33,11 @@ namespace Rotary_Switch_Designer
             get { return rbCCW.Checked; }
             set { rbCCW.Checked = value; }
         }
+
+        public string SymbolName
+        {
+            get { return SymbolNameTextBox.Text; }
+            set { SymbolNameTextBox.Text = value; }
+        }
     }
 }

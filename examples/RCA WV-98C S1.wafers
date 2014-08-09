@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Switch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<Switch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" SymbolName="Function">
   <Sides>
     <Side Name="A-FRONT" Shaft="0" ShaftPosition="0">
       <Positions>

@@ -40,7 +40,7 @@ namespace Rotary_Switch_Designer
         private const int m_DefaultShaftPositions = 12;
         private static IList<IWaferExport> m_ExportFormats = new List<IWaferExport>()
         {
-            //new WaferExportKiCad()
+            new WaferExportKiCad()
         };
         #endregion
 
@@ -688,6 +688,7 @@ namespace Rotary_Switch_Designer
                 NumberingStartAngle = m_Data.StatorStart,
                 RearView = m_Data.RearView,
                 TextCCW = m_Data.TextCCW,
+                SymbolName = m_Data.SymbolName,
             })
             {
                 if (form.ShowDialog() == System.Windows.Forms.DialogResult.OK)
@@ -695,6 +696,7 @@ namespace Rotary_Switch_Designer
                     uint start = form.NumberingStartAngle;
                     bool rear = form.RearView;
                     bool ccw = form.TextCCW;
+                    string name = form.SymbolName;
                     Operation((Action<Model.Switch>)((data) =>
                     {
                         // santify checks
@@ -705,6 +707,7 @@ namespace Rotary_Switch_Designer
                         data.StatorStart = start;
                         data.RearView = rear;
                         data.TextCCW = ccw;
+                        data.SymbolName = name;
                     }));
                 }
             }
@@ -721,7 +724,7 @@ namespace Rotary_Switch_Designer
                 using (var dialog = new SaveFileDialog()
                 {
                     Title = "Export",
-                    Filter = string.Join("|", m_ExportFormats.Select((format) => string.Format("{0} ({1}|*.{1}", format.Name, format.Extension))),
+                    Filter = string.Join("|", m_ExportFormats.Select((format) => string.Format("{0}|*.{1}", format.Name, format.Extension))),
                     FilterIndex = 1,
                     OverwritePrompt = true,
                     AutoUpgradeEnabled = true,

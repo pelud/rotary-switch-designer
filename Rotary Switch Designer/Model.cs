@@ -29,6 +29,7 @@ namespace Rotary_Switch_Designer
         void FillPolygon(Point[] points, bool highlight);
         void DrawLine(Point start, Point end);
         void DrawArc(Point center, int radius, float start_angle, float sweep_angle);
+        void AddPin(Point center, int number);
     }
 
     namespace Model
@@ -503,6 +504,7 @@ namespace Rotary_Switch_Designer
             private ObservableCollection<Shaft> m_Shafts = new ObservableCollection<Shaft>();
             private bool m_RearView = false;
             private bool m_TextCCW = false;
+            private string m_SymbolName = "";
             #endregion
 
             #region Constructor / Event Handlers
@@ -620,6 +622,25 @@ namespace Rotary_Switch_Designer
                         m_TextCCW = value;
                         if (PropertyChanged != null)
                             PropertyChanged(this, new PropertyChangedEventArgs("TextCCW"));
+                    }
+                }
+            }
+
+            /// <summary>
+            /// Indicates the name of the symbol for the schematic export function.
+            /// </summary>
+            [XmlAttribute]
+            [DefaultValue("")]
+            public string SymbolName
+            {
+                get { return m_SymbolName; }
+                set
+                {
+                    if (value != m_SymbolName)
+                    {
+                        m_SymbolName = value;
+                        if (PropertyChanged != null)
+                            PropertyChanged(this, new PropertyChangedEventArgs("SymbolName"));
                     }
                 }
             }

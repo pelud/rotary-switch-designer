@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Xml.Serialization;
+using System.Drawing;
 
 namespace Rotary_Switch_Designer
 {
