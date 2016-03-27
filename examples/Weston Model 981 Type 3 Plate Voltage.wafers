@@ -1,0 +1,692 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Switch xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Sides>
+    <Side Name="1A" Shaft="0" ShaftPosition="0">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="1B" Shaft="0" ShaftPosition="0" ShaftPositionRear="true">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="2A" Shaft="0" ShaftPosition="1">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="2B" Shaft="0" ShaftPosition="1" ShaftPositionRear="true">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="3A" Shaft="0" ShaftPosition="2">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="1">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice EdgeCCW="true" Midsection="true" />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="3B" Shaft="0" ShaftPosition="2" ShaftPositionRear="true">
+      <Positions>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="1">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="4" Shaft="0" ShaftPosition="3">
+      <Positions>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="1">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="5A" Shaft="0" ShaftPosition="4">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="1">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+    <Side Name="5B" Shaft="0" ShaftPosition="4" ShaftPositionRear="true">
+      <Positions>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="1">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice Midsection="true" />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position>
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+        <Position Spoke="2">
+          <RotorSlices>
+            <RotorSlice EdgeCCW="true" Midsection="true" EdgeCW="true" />
+            <RotorSlice />
+          </RotorSlices>
+        </Position>
+      </Positions>
+    </Side>
+  </Sides>
+  <Shafts>
+    <Shaft Detents="12" DetentStopCount="7" />
+  </Shafts>
+</Switch>

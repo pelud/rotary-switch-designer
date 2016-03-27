@@ -19,6 +19,17 @@ namespace Rotary_Switch_Designer
         void Export(Model.Switch data, string filename);
     }
 
+    /// <summary>
+    /// Wrapper interface for graphics operations.
+    /// </summary>
+    /// <remarks>
+    /// All positions and angles are with respect to the GDI co-ordinate
+    /// system.  All angles start at the +X axis (3 o'clock) and positive
+    /// angles go in the counter-clockwise direction.  The X and Y co-ordinates
+    /// of the client rectangle are assumed to be top-left position, with
+    /// positive X co-ordinates going to the right and positive Y co-ordinates
+    /// going down on the screen.
+    /// </remarks>
     public interface IGraphics
     {
         Size MeasureString(string text);

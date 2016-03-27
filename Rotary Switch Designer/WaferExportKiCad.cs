@@ -335,10 +335,11 @@ ENDDEF
             };
 
             // draw each of the sides
+            var pin_grid = 50;
             for (int i = 0; i < data.Sides.Count; ++i)
             {
                 symbol.Unit = i + 1;
-                WaferControl.Draw(symbol, symbol.Client, data.Sides[i], 0, data.StatorStart, data.RearView, data.TextCCW, true);
+                WaferControl.Draw(symbol, symbol.Client, data.Sides[i], 0, data.StatorStart, data.RearView, data.TextCCW, true, pin_grid);
             }
 
             // create the data
